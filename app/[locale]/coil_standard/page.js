@@ -8,7 +8,11 @@ export default function CoilStandardPage() {
   const [coils, setCoils] = useState([]);
 
   const [selectedModel, setSelectedModel] = useState("");
-  const [voltage, setVoltage] = useState("");
+
+  // 🔥 CHANGED: split voltage into value + type
+  const [voltageValue, setVoltageValue] = useState("");
+  const [voltageType, setVoltageType] = useState("VAC");
+
   const [manufacturer, setManufacturer] = useState("");
 
   useEffect(() => {
@@ -30,11 +34,14 @@ export default function CoilStandardPage() {
   async function submit(e) {
     e.preventDefault();
 
+    // 🔥 CHANGED: combine both fields into original API format
+    const voltage = voltageValue !== "" ? `${voltageValue}${voltageType}` : "";
+
     const body = {
       type: ITEM_TYPES.COIL_STANDARD,
       data: {
         model_number: selectedModel,
-        voltage,
+        voltage, // unchanged API contract
         manufacturer,
       },
     };
@@ -49,7 +56,8 @@ export default function CoilStandardPage() {
 
     if (result.success) {
       setSelectedModel("");
-      setVoltage("");
+      setVoltageValue("");
+      setVoltageType("VAC");
       setManufacturer("");
       loadCoils();
     } else {
@@ -58,22 +66,23 @@ export default function CoilStandardPage() {
   }
 
   async function deleteCoil(id, type) {
-  const ok = confirm("Delete this coil?");
-  if (!ok) return;
+    const ok = confirm("Delete this coil?");
+    if (!ok) return;
 
-  const res = await fetch(`/api/coil?id=${id}&type=${type}`, {
-    method: "DELETE",
-  });
+    const res = await fetch(`/api/coil?id=${id}&type=${type}`, {
+      method: "DELETE",
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!res.ok) {
-    alert(data.error);
-    return;
+    if (!res.ok) {
+      alert(data.error);
+      return;
+    }
+
+    loadCoils();
   }
 
-  loadCoils();
-}
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold">coil_standard</h1>
@@ -98,12 +107,31 @@ export default function CoilStandardPage() {
           Coil Model: <b>{selectedModel}</b>
         </div>
 
-        <input
-          className="border p-1 block mb-2"
-          placeholder="Voltage"
-          value={voltage}
-          onChange={(e) => setVoltage(e.target.value)}
-        />
+        {/* 🔥 NEW: Voltage split input */}
+        <div className="flex gap-2 mb-2">
+          <input
+            className="border p-1 w-1/2"
+            type="number"
+            min="0"
+            placeholder="Voltage value"
+            value={voltageValue}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === "" || Number(val) >= 0) {
+                setVoltageValue(val);
+              }
+            }}
+          />
+
+          <select
+            className="border p-1 w-1/2"
+            value={voltageType}
+            onChange={(e) => setVoltageType(e.target.value)}
+          >
+            <option value="VAC">VAC</option>
+            <option value="VDC">VDC</option>
+          </select>
+        </div>
 
         <input
           className="border p-1 block mb-2"
@@ -128,14 +156,16 @@ export default function CoilStandardPage() {
             <div>Voltage: {c.voltage}</div>
             <div>Manufacturer: {c.manufacturer}</div>
 
-            {/* 🔥 NEW */}
             <div className="font-bold mt-1">
               Stock: {c.stock}
             </div>
+
             <button
               onClick={() => deleteCoil(c.id, ITEM_TYPES.COIL_STANDARD)}
-              className="bg-red-600 text-white px-2 py-1 mt-2"  
-            >Delete</button>
+              className="bg-red-600 text-white px-2 py-1 mt-2"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>

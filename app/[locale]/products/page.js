@@ -152,7 +152,10 @@ export default function ProductsPage() {
           onChange={(e) => setConnection(e.target.value)}
         />
 
-        <button onClick={() => {window.location.reload();}} className="bg-black text-white px-3 py-1">
+        <button
+          type="submit"
+          className="bg-black text-white px-3 py-1"
+        >
           Create
         </button>
       </form>
