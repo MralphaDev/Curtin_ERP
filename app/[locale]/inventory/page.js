@@ -64,6 +64,7 @@ export default function NewInventory() {
     fetch("/api/inventory-event")
       .then(res => res.json())
       .then(setEvents);
+    
   }, []);
 
   // ================================
@@ -166,6 +167,7 @@ export default function NewInventory() {
     fetch("/api/inventory-event")
       .then(res => res.json())
       .then(setEvents);
+    window.location.reload();
   }
 
   // ================================

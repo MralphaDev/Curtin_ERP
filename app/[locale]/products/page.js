@@ -152,17 +152,21 @@ export default function ProductsPage() {
           onChange={(e) => setConnection(e.target.value)}
         />
 
-        <button className="bg-black text-white px-3 py-1">
+        <button onClick={() => {window.location.reload();}} className="bg-black text-white px-3 py-1">
           Create
         </button>
       </form>
 
       {products.map((p) => (
         <div key={p.id} className="border p-2 my-2">
-          <div>ID: {p.id}</div>
+          
           <div>Model: {p.model_number}</div>
           <div>Manufacturer: {p.manufacturer}</div>
           <div>Category: {p.category}</div>
+          <div>Inner Diameter: {p.inner_diameter_mm} mm</div>
+          <div>Temperature Range: {p.temp_min_c}°C to {p.temp_max_c}°C</div>
+          <div>Pressure Range: {p.pressure_min_bar} bar to {p.pressure_max_bar} bar</div>
+          <div>Connection: {p.connection}</div>
 
           <div className="font-bold mt-1">
             Stock: {p.stock}
