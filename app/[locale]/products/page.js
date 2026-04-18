@@ -265,7 +265,7 @@ export default function ProductsPage() {
                       </div>
 
                       <button className="p-2 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 onClick={() => remove(p.id)} className="w-4 h-4" />
                       </button>
 
                     </div>
