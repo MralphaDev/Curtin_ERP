@@ -1,0 +1,7 @@
+{
+  "login": "Login",
+  "loginFailed": "Login failed",
+  "networkError": "Network error",
+  "loading": "Loading...",
+  "dashboard": "Dashboard"
+}

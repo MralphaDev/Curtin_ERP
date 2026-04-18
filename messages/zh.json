@@ -1,0 +1,7 @@
+{
+  "login": "登录",
+  "loginFailed": "登录失败",
+  "networkError": "网络错误",
+  "loading": "加载中...",
+  "dashboard": "仪表板"
+}
