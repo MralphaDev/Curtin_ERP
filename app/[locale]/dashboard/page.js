@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getDictionary } from "@/lib/dictionary";
-
+import LanguageSwitcher from "../langSwitcher";
 import ProductsPage from "@/app/[locale]/products/page";
 import NewInventory from "../inventory/page";
 import CoilStandardPage from "../coil_standard/page";
@@ -16,6 +16,7 @@ import {
   Plug,
   BarChart3
 } from "lucide-react";
+import { i } from "framer-motion/client";
 
 export default function Dashboard() {
   const pathname = usePathname();
@@ -31,7 +32,7 @@ const iconWrapper =
   "w-10 h-10 flex items-center justify-center rounded-xl shadow-md";
   return (
 <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-white via-blue-50 to-blue-100 flex flex-col items-center justify-center p-4 md:p-6">
-
+  <LanguageSwitcher />
   <AnimatePresence mode="wait">
 
     {!active ? (

@@ -8,6 +8,7 @@ export default function CoilIndependentPage() {
   const [coils, setCoils] = useState([]);
 
   const [coilModel, setCoilModel] = useState("");
+  const [coilError, setCoilError] = useState("");// coil model error for client-side validation
 
   // 🔥 CHANGED: split voltage
   const [voltageValue, setVoltageValue] = useState("");
@@ -25,6 +26,14 @@ export default function CoilIndependentPage() {
     loadCoils();
   }, []);
 
+  function normalize(s) {
+  return (s || "")
+    .toUpperCase()
+    .replace(/\s+/g, "")
+    .replace(/[^\w\u4e00-\u9fa5]/g, "");
+}
+
+
   async function submit(e) {
     e.preventDefault();
 
@@ -40,6 +49,11 @@ export default function CoilIndependentPage() {
         manufacturer,
       },
     };
+
+    if (coilError) {
+  alert("Coil Model 重复，无法提交");
+  return;
+}
 
     const res = await fetch("/api/coil", {
       method: "POST",
@@ -149,8 +163,23 @@ return (
               "
               placeholder="Coil Model"
               value={coilModel}
-              onChange={(e) => setCoilModel(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                setCoilModel(value);
+
+                const duplicate = coils?.some(
+                  (c) => normalize(c.unique_key_active) === normalize(value)
+                );
+
+                setCoilError(duplicate ? "检测到重复 Coil Model" : "");
+              }}
             />
+            {coilError && (
+              <p className="text-red-500 text-xs ">
+                {coilError}
+              </p>
+            )}
 
             {/* responsive row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
@@ -160,14 +189,23 @@ return (
                   px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
                   focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition
                 "
-                type="number"
-                min="0"
+                inputMode="numeric"
                 placeholder="Voltage"
                 value={voltageValue}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === "" || Number(val) >= 0) setVoltageValue(val);
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Backspace" ||
+                    e.key === "Delete" ||
+                    e.key === "ArrowLeft" ||
+                    e.key === "ArrowRight" ||
+                    e.key === "Tab"
+                  ) return;
+
+                  if (!/^[0-9]$/.test(e.key)) {
+                    e.preventDefault();
+                  }
                 }}
+                onChange={(e) => setVoltageValue(e.target.value)}
               />
 
               <select
@@ -184,15 +222,21 @@ return (
 
             </div>
 
-            <input
+            <select
               className="
                 w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
                 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition
               "
-              placeholder="Manufacturer"
               value={manufacturer}
               onChange={(e) => setManufacturer(e.target.value)}
-            />
+            >
+              <option value="">Select Manufacturer</option>
+              <option value="JAKSA">JAKSA</option>
+              <option value="CEME">CEME</option>
+              <option value="ROTORK">ROTORK</option>
+              <option value="GOETVALVE">GOETVALVE</option>
+              <option value="SATURN">SATURN</option>
+            </select>
 
             <button
               className="

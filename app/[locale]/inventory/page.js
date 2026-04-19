@@ -137,14 +137,29 @@ export default function NewInventory() {
     }
   }
 
+
+function normalizeCompany(s) {
+  return (s || "")
+    .toUpperCase()
+    .trim()
+    .replace(/[-\/.]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
   // ================================
   // 🚀 SUBMIT (IN / OUT SPLIT)
   // ================================
   async function submit(side) {
+    if (!company || !company.trim()) {
+      alert("Company 不能为空");
+      return;
+    }
+
     const body = {
       action: side,
       mode,
-      company: company, // include company in payload
+      company: normalizeCompany(company), // include company in payload
       remark: "from UI",
       items: buildItems(side),
     };

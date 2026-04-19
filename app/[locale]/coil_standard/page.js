@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState,usePathname } from "react";
 import { ITEM_TYPES } from "@/lib/constants/itemTypes";
 import { Boxes, Plus, Trash2, Loader2 } from "lucide-react";
 
 export default function CoilStandardPage() {
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1];
+  const dict = getDictionary(locale);
+
   const [products, setProducts] = useState([]);
   const [coils, setCoils] = useState([]);
 
@@ -169,16 +173,26 @@ export default function CoilStandardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
 
               <input
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
                 placeholder="Voltage value"
                 className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
                 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition"
                 value={voltageValue}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === "" || Number(val) >= 0) setVoltageValue(val);
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Backspace" ||
+                    e.key === "Delete" ||
+                    e.key === "ArrowLeft" ||
+                    e.key === "ArrowRight" ||
+                    e.key === "Tab"
+                  ) return;
+
+                  if (!/^[0-9]$/.test(e.key)) {
+                    e.preventDefault();
+                  }
                 }}
+                onChange={(e) => setVoltageValue(e.target.value)}
               />
 
               <select
@@ -194,13 +208,19 @@ export default function CoilStandardPage() {
             </div>
 
             {/* MANUFACTURER */}
-            <input
-              className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
-              focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition"
-              placeholder="Manufacturer"
-              value={manufacturer}
-              onChange={(e) => setManufacturer(e.target.value)}
-            />
+          <select
+            className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
+            focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition"
+            value={manufacturer}
+            onChange={(e) => setManufacturer(e.target.value)}
+          >
+            <option value="">Select Manufacturer</option>
+            <option value="JAKSA">JAKSA</option>
+            <option value="CEME">CEME</option>
+            <option value="ROTORK">ROTORK</option>
+            <option value="GOETVALVE">GOETVALVE</option>
+            <option value="SATURN">SATURN</option>
+          </select>
 
             <button
               type="submit"

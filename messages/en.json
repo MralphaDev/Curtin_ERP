@@ -1,5 +1,6 @@
 {
   "login": "Login",
+  "curtinims": "Curtin IMS",
   "loginFailed": "Login failed",
   "networkError": "Network error",
   "loading": "Loading...",

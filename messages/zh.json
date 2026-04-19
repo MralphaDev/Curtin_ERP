@@ -1,5 +1,6 @@
 {
   "login": "登录",
+  "curtinims": "科延自动化库存管理系统",
   "loginFailed": "登录失败",
   "networkError": "网络错误",
   "loading": "加载中...",

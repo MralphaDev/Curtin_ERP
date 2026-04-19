@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { getDictionary } from "@/lib/dictionary";
+import LanguageSwitcher from "../langSwitcher";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-blue-100 relative overflow-hidden">
-
+      <LanguageSwitcher />
       {/* 🌈 BACKGROUND BLOBS */}
       <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-blue-300 rounded-full blur-3xl opacity-30 animate-pulse" />
       <div className="absolute bottom-[-120px] right-[-120px] w-[300px] h-[300px] bg-sky-300 rounded-full blur-3xl opacity-30 animate-pulse" />
@@ -52,7 +53,7 @@ export default function LoginPage() {
       >
         {/* 🏷 TITLE */}
         <h1 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-blue-500 to-sky-400 bg-clip-text text-transparent">
-          CURTIN IMS
+          {dict.curtinims}
         </h1>
 
         {/* 🔘 LOGIN BUTTON */}

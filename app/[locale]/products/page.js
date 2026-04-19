@@ -7,6 +7,8 @@ export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [modelError, setModelError] = useState("");//model number error only for client-side validation, server will still validate and return error if duplicate or invalid data is sent
+
   const [form, setForm] = useState({
     model_number: "",
     category: "",
@@ -44,6 +46,18 @@ export default function ProductsPage() {
     ])
   );
 
+  // 🚨 关键：提交前再次校验（最终防线）
+  const duplicate = products.some(
+    (p) =>
+      normalize(p.model_number_active) ===
+      normalize(cleanedForm.model_number)
+  );
+
+  if (duplicate) {
+    alert("型号已存在，禁止提交");
+    return;
+  }
+
   const res = await fetch("/api/products", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -76,17 +90,66 @@ export default function ProductsPage() {
     load();
   }
 
-  const fields = [
-    ["model_number", "Model Number"],
-    ["category", "Category"],
-    ["manufacturer", "Manufacturer"],
-    ["inner_diameter_mm", "Inner Diameter (mm)"],
-    ["temp_min_c", "Temp Min (°C)"],
-    ["temp_max_c", "Temp Max (°C)"],
-    ["pressure_min_bar", "Pressure Min (bar)"],
-    ["pressure_max_bar", "Pressure Max (bar)"],
-    ["connection", "Connection Type"],
-  ];
+function normalize(s) {
+  return (s || "")
+    .toUpperCase()
+    .replace(/\s+/g, "")
+    .replace(/[^\w\u4e00-\u9fa5]/g, "");
+}
+
+const isDuplicateModelNumber = (value, products) => {
+  const n = normalize(value);
+
+  return products.some(
+    (p) => normalize(p.model_number_active) === n
+  );
+};
+
+const MANUFACTURERS = [
+  "JAKSA",
+  "CEME",
+  "ROTORK",
+  "GOETVALVE",
+  "SATURN",
+];
+
+const CATEGORIES = [
+  "通用电磁阀",
+  "气动角座阀",
+  "单向阀",
+  "液氮过滤器",
+  "安全阀",
+  "离心泵",
+  "电磁泵",
+  "压力传感器",
+  "压力开关",
+  "压力表",
+  "温度表",
+  "水用电磁阀",
+  "二位三通电磁阀",
+  "高压电磁阀",
+  "真空电磁阀",
+  "常开电磁阀",
+  "防爆电磁阀",
+  "低温电磁阀",
+  "高温电磁阀",
+  "液位开关",
+  "流量开关",
+  "膜片",
+];
+
+const fields = [
+  ["model_number", "Model Number", "text"],
+  ["category", "Category", "select", CATEGORIES],
+  ["manufacturer", "Manufacturer", "select", MANUFACTURERS],
+  ["inner_diameter_mm", "Inner Diameter (mm)", "int"],
+  ["temp_min_c", "Temp Min (°C)", "int"],
+  ["temp_max_c", "Temp Max (°C)", "int"],
+  ["pressure_min_bar", "Pressure Min (bar)", "int"],
+  ["pressure_max_bar", "Pressure Max (bar)", "int"],
+  ["connection", "Connection Type", "text"],
+];
+
 
   return (
 <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-slate-50 relative">
@@ -150,22 +213,79 @@ export default function ProductsPage() {
             {/* responsive fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
 
-              {fields.map(([key, label]) => (
+              {fields.map(([key, label, type, options]) => (
                 <div key={key} className="relative">
 
-                  <input
-                    type="text"
-                    value={form[key]}
-                    onChange={(e) => update(key, e.target.value)}
-                    placeholder=" "
-                    className="
-                      peer w-full px-4 pt-6 pb-2 rounded-xl border-2 border-slate-200 bg-white
-                      text-sm text-slate-900 placeholder-transparent outline-none
-                      focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10
-                      transition
-                    "
-                  />
+                  {/* SELECT */}
+                  {type === "select" ? (
+                    <select
+                      value={form[key]}
+                      onChange={(e) => update(key, e.target.value)}
+                      className="
+                        peer w-full px-4 pt-6 pb-2 rounded-xl border-2 border-slate-200 bg-white
+                        text-sm text-slate-900 outline-none
+                        focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10
+                        transition
+                      "
+                    >
+                      <option value="" disabled hidden />
+                      {options.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    /* INPUT */
+                    <input
+                      type={type === "int" ? "text" : "text"}
+                      inputMode={type === "int" ? "numeric" : undefined}
+                      value={form[key]}
+                      onKeyDown={(e) => {
+                        if (type !== "int") return;
 
+                        // allow control keys
+                        if (
+                          e.key === "Backspace" ||
+                          e.key === "Delete" ||
+                          e.key === "ArrowLeft" ||
+                          e.key === "ArrowRight" ||
+                          e.key === "Tab"
+                        ) return;
+
+                        // block everything except digits
+                        if (!/^[0-9]$/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        update(key, value);
+
+                        if (key === "model_number") {
+                          const duplicate = isDuplicateModelNumber(value, products);
+                          setModelError(duplicate ? "检测到重复型号" : "");
+                        }
+                      }}
+                      placeholder=" "
+                      className="
+                        peer w-full px-4 pt-6 pb-2 rounded-xl border-2 border-slate-200 bg-white
+                        text-sm text-slate-900 placeholder-transparent outline-none
+                        focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10
+                        transition
+                      "
+                    />
+                  )}
+
+                  {/* ⭐ 这里放错误提示 */}
+                  {key === "model_number" && modelError && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {modelError}
+                    </p>
+                  )}
+
+                  {/* LABEL */}
                   <label className="
                     absolute left-4 top-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400
                     peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2
