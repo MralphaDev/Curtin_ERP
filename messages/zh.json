@@ -1,8 +1,14 @@
 {
   "login": "登录",
-  "curtinims": "科延自动化库存管理系统",
+  "curtinims": "科廷自动化库存管理系统",
   "loginFailed": "登录失败",
   "networkError": "网络错误",
   "loading": "加载中...",
-  "dashboard": "仪表板"
+  "dashboard": "仪表板",
+
+  "body": "阀体/主体",
+  "coilStandard": "标配线圈",
+  "coilIndependent": "中性线圈",
+  "inventory": "库存",
+  "back": "返回仪表板"
 }

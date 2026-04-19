@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { getDictionary } from "@/lib/dictionary";
 import { Plus, Package, Trash2, Loader2, Thermometer, Gauge, Circle, Link2, Boxes } from "lucide-react";
 
 export default function ProductsPage() {
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1];
+  const dict = getDictionary(locale);
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 

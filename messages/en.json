@@ -1,8 +1,14 @@
 {
   "login": "Login",
-  "curtinims": "Curtin IMS",
+  "curtinims": "Curtin Inventory Management System",
   "loginFailed": "Login failed",
   "networkError": "Network error",
   "loading": "Loading...",
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+
+  "body": "Body",
+  "coilStandard": "Coil Standard",
+  "coilIndependent": "Coil Independent",
+  "inventory": "Inventory",
+  "back": "Back to Dashboard"
 }

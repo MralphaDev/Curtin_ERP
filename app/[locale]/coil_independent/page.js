@@ -3,8 +3,13 @@
 import { useEffect, useState } from "react";
 import { ITEM_TYPES } from "@/lib/constants/itemTypes";
 import { Boxes, Plus ,Trash2} from "lucide-react";
+import { usePathname } from "next/navigation";
+import { getDictionary } from "@/lib/dictionary";
 
 export default function CoilIndependentPage() {
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1];
+  const dict = getDictionary(locale);
   const [coils, setCoils] = useState([]);
 
   const [coilModel, setCoilModel] = useState("");

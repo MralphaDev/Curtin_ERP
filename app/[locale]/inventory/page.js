@@ -3,9 +3,13 @@
 import { useEffect, useState } from "react";
 import { INVENTORY_MODES } from "@/lib/constants/inventoryModes";
 import { ITEM_TYPES } from "@/lib/constants/itemTypes";
+import { usePathname } from "next/navigation";
+import { getDictionary } from "@/lib/dictionary";
 
 export default function NewInventory() {
-
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1];
+  const dict = getDictionary(locale);
   // ================================
   // 📦 DATA STATE (FROM API)
   // ================================

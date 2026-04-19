@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState,usePathname } from "react";
+import { useEffect, useState} from "react";
+import { usePathname } from "next/navigation";
 import { ITEM_TYPES } from "@/lib/constants/itemTypes";
 import { Boxes, Plus, Trash2, Loader2 } from "lucide-react";
+import { getDictionary } from "@/lib/dictionary";
 
 export default function CoilStandardPage() {
   const pathname = usePathname();

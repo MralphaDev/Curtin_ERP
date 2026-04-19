@@ -45,13 +45,9 @@ const iconWrapper =
         className="flex flex-col items-center gap-10 md:gap-16 w-full"
       >
 
-        {/* ========================= */}
-        {/* 🌟 HERO TITLE (RESPONSIVE) */}
-        {/* ========================= */}
-
+        {/* HERO TITLE */}
         <div className="flex flex-col md:flex-row items-center md:items-stretch gap-6 md:gap-0 text-center md:text-left">
 
-          {/* CURTIN */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -66,10 +62,8 @@ const iconWrapper =
             CURTIN
           </motion.div>
 
-          {/* ERP BLOCK */}
           <div className="flex flex-col justify-center min-w-0 md:min-w-[280px]">
 
-            {/* E.R.P */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -82,26 +76,21 @@ const iconWrapper =
               E.R.P.
             </motion.div>
 
-            {/* divider */}
             <div className="h-[1px] w-full bg-gradient-to-r from-blue-300 to-transparent my-3" />
 
-            {/* subtitle */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-sm sm:text-base md:text-lg text-gray-600 font-medium leading-snug"
             >
-              Inventory Management System
+              {dict.curtinims}
             </motion.div>
 
           </div>
         </div>
 
-        {/* ========================= */}
-        {/* 🔘 MENU GRID (RESPONSIVE) */}
-        {/* ========================= */}
-
+        {/* MENU */}
         <div className="
           grid
           grid-cols-1
@@ -111,76 +100,77 @@ const iconWrapper =
           w-full max-w-2xl
         ">
 
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={buttonClass}
-        onClick={() => setActive("products")}
-      >
-        <span className={`${iconWrapper} bg-gradient-to-br from-sky-400 to-blue-500`}>
-          <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={buttonClass}
+            onClick={() => setActive("products")}
           >
-            <Box className="w-5 h-5 text-white" />
-          </motion.div>
-        </span>
-        Body
-      </motion.button>
+            <span className={`${iconWrapper} bg-gradient-to-br from-sky-400 to-blue-500`}>
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+              >
+                <Box className="w-5 h-5 text-white" />
+              </motion.div>
+            </span>
+            {dict.body}
+          </motion.button>
 
-     <motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  className={buttonClass}
-  onClick={() => setActive("coilStandard")}
->
-  <span className={`${iconWrapper} bg-gradient-to-br from-amber-400 to-orange-500`}>
-    <motion.div
-      animate={{ rotate: [0, 12, -12, 0] }}
-      transition={{ repeat: Infinity, duration: 3.5 }}
-      className="text-lg"
-      style={{ filter: "brightness(0) invert(1)" }}
-    >
-      ⚡
-    </motion.div>
-  </span>
-  Coil Standard
-</motion.button>
-
-<motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  className={buttonClass}
-  onClick={() => setActive("coilIndependent")}
->
-  <span className={`${iconWrapper} bg-gradient-to-br from-purple-500 to-fuchsia-500`}>
-    <motion.div
-      animate={{ y: [0, -2, 0] }}
-      transition={{ repeat: Infinity, duration: 2.5 }}
-      className="text-lg"
-      style={{ filter: "brightness(0) invert(1)" }}
-    >
-      ⚡
-    </motion.div>
-  </span>
-  Coil Independent
-</motion.button>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={buttonClass}
-        onClick={() => setActive("inventory")}
-      >
-        <span className={`${iconWrapper} bg-gradient-to-br from-emerald-400 to-green-500`}>
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={buttonClass}
+            onClick={() => setActive("coilStandard")}
           >
-            <BarChart3 className="w-5 h-5 text-white" />
-          </motion.div>
-        </span>
-        Inventory
-      </motion.button>
+            <span className={`${iconWrapper} bg-gradient-to-br from-amber-400 to-orange-500`}>
+              <motion.div
+                animate={{ rotate: [0, 12, -12, 0] }}
+                transition={{ repeat: Infinity, duration: 3.5 }}
+                className="text-lg"
+                style={{ filter: "brightness(0) invert(1)" }}
+              >
+                ⚡
+              </motion.div>
+            </span>
+            {dict.coilStandard}
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={buttonClass}
+            onClick={() => setActive("coilIndependent")}
+          >
+            <span className={`${iconWrapper} bg-gradient-to-br from-purple-500 to-fuchsia-500`}>
+              <motion.div
+                animate={{ y: [0, -2, 0] }}
+                transition={{ repeat: Infinity, duration: 2.5 }}
+                className="text-lg"
+                style={{ filter: "brightness(0) invert(1)" }}
+              >
+                ⚡
+              </motion.div>
+            </span>
+            {dict.coilIndependent}
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={buttonClass}
+            onClick={() => setActive("inventory")}
+          >
+            <span className={`${iconWrapper} bg-gradient-to-br from-emerald-400 to-green-500`}>
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                <BarChart3 className="w-5 h-5 text-white" />
+              </motion.div>
+            </span>
+            {dict.inventory}
+          </motion.button>
 
         </div>
 
@@ -200,7 +190,7 @@ const iconWrapper =
             onClick={() => setActive(null)}
             className="px-4 py-2 rounded-xl bg-white shadow hover:shadow-md transition"
           >
-            ← Back to Dashboard
+            ← {dict.back}
           </button>
         </div>
 
