@@ -53,8 +53,10 @@ export default function NewInventory() {
         console.log("coil api:", data);
 
         if (data.standard && data.independent) {
-          setCoilStd(data.standard);
-          setCoilIndp(data.independent);
+          //console.log("Standard coils:", data.standard);
+         // console.log("Independent coils:", data.independent);
+          setCoilStd(data.standard); //return all standard coils
+          setCoilIndp(data.independent); //return all independent coils
         } else if (Array.isArray(data)) {
           setCoilStd(data.filter(c => c.type === "standard"));
           setCoilIndp(data.filter(c => c.type === "independent"));
@@ -68,7 +70,7 @@ export default function NewInventory() {
   }, []);
 
   // ================================
-  // 🧠 BUILD ITEMS (UNCHANGED LOGIC)
+  // 🧠 BUILD ITEMS 
   // ================================
   function buildItems(side) {
     const isIn = side === "IN";
@@ -191,15 +193,19 @@ export default function NewInventory() {
   // 🔍 HELPERS
   // ================================
   function getValve(id) {
-    return products.find(p => p.id === id)?.model_number || id;
+   
+    return products.find(p => p.id === id)?.model_number_active || "deleted valve id: " + id; //model number active is the model number of the current active standard coil
+  
   }
 
   function getCoilStd(id) {
-    return coilStd.find(c => c.id === id)?.coil_model || id;
+    //console.log("getCoilStd id:", id, "coilStd:", coilStd);
+    return coilStd.find(c => c.id === id)?.unique_key_active || "deleted coil standard id: " + id; //unique key active is the model number of the current active standard coil 
   }
 
   function getCoilIndp(id) {
-    return coilIndp.find(c => c.id === id)?.coil_idp_model || id;
+    //console.log("getCoilIndp id:", id, "coilIndp:", coilIndp);
+    return coilIndp.find(c => c.id === id)?.unique_key_active || "deleted coil independent id: " + id; //unique key active is the model number of the current active independent coil
   }
 
   function formatEvent(event) {
@@ -252,10 +258,10 @@ async function deleteEvent(id) {
   // =========================
   // 🔥 FIX #2 (MISSING): refresh STOCK
   // =========================
-  const updatedStock = await fetch("/api/inventory-stock")
+  /*const updatedStock = await fetch("/api/inventory-stock")
     .then(res => res.json());
 
-  console.log("♻️ updated stock after delete:", updatedStock);
+  // console.log("♻️ updated stock after delete:", updatedStock);*/
 
   // if you have stock state:
   // setStock(updatedStock);
@@ -264,6 +270,13 @@ async function deleteEvent(id) {
   // ================================
   // 🎨 UI
   // ================================
+if (coilStd.length > 0) {
+  console.log("coilstandard:", coilStd);
+}
+
+if (coilIndp.length > 0) {
+  console.log("coilindependent:", coilIndp);
+}
 return (
 <div className="min-h-screen bg-gradient-to-br from-white via-sky-50/30 to-white">
   {/* Ambient background effects */}
@@ -348,8 +361,10 @@ return (
             >
               <option value="">Select Valve</option>
               {products.map((p) => (
-                <option key={p.id} value={p.id}>{p.model_number}</option>
+                <option key={p.id} value={p.id}>{p.model_number_active}</option>
+                
               ))}
+              
             </select>
           )}
 
@@ -361,7 +376,7 @@ return (
             >
               <option value="">Select Coil Standard</option>
               {coilStd.map((c) => (
-                <option key={c.id} value={c.id}>{c.coil_model}</option>
+                <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
             </select>
           )}
@@ -375,7 +390,7 @@ return (
             >
               <option value="">Select Coil Independent</option>
               {coilIndp.map((c) => (
-                <option key={c.id} value={c.id}>{c.coil_idp_model}</option>
+                <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
             </select>
           )}
@@ -433,7 +448,7 @@ return (
             >
               <option value="">Select Valve</option>
               {products.map((p) => (
-                <option key={p.id} value={p.id}>{p.model_number}</option>
+                <option key={p.id} value={p.id}>{p.model_number_active}</option>
               ))}
             </select>
           )}
@@ -446,7 +461,7 @@ return (
             >
               <option value="">Select Coil Standard</option>
               {coilStd.map((c) => (
-                <option key={c.id} value={c.id}>{c.coil_model}</option>
+                <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
             </select>
           )}
@@ -460,7 +475,7 @@ return (
             >
               <option value="">Select Coil Independent</option>
               {coilIndp.map((c) => (
-                <option key={c.id} value={c.id}>{c.coil_idp_model}</option>
+                <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
             </select>
           )}

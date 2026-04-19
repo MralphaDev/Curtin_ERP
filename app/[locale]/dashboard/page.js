@@ -127,39 +127,43 @@ const iconWrapper =
         Body
       </motion.button>
 
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={buttonClass}
-        onClick={() => setActive("coilStandard")}
-      >
-        <span className={`${iconWrapper} bg-gradient-to-br from-amber-400 to-orange-500`}>
-          <motion.div
-            animate={{ rotate: [0, 12, -12, 0] }}
-            transition={{ repeat: Infinity, duration: 3.5 }}
-          >
-            <Cog className="w-5 h-5 text-white" />
-          </motion.div>
-        </span>
-        Coil Standard
-      </motion.button>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={buttonClass}
-        onClick={() => setActive("coilIndependent")}
-      >
-        <span className={`${iconWrapper} bg-gradient-to-br from-purple-500 to-fuchsia-500`}>
-          <motion.div
-            animate={{ y: [0, -2, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5 }}
-          >
-            <Plug className="w-5 h-5 text-white" />
-          </motion.div>
-        </span>
-        Coil Independent
-      </motion.button>
+     <motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  className={buttonClass}
+  onClick={() => setActive("coilStandard")}
+>
+  <span className={`${iconWrapper} bg-gradient-to-br from-amber-400 to-orange-500`}>
+    <motion.div
+      animate={{ rotate: [0, 12, -12, 0] }}
+      transition={{ repeat: Infinity, duration: 3.5 }}
+      className="text-lg"
+      style={{ filter: "brightness(0) invert(1)" }}
+    >
+      ⚡
+    </motion.div>
+  </span>
+  Coil Standard
+</motion.button>
 
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  className={buttonClass}
+  onClick={() => setActive("coilIndependent")}
+>
+  <span className={`${iconWrapper} bg-gradient-to-br from-purple-500 to-fuchsia-500`}>
+    <motion.div
+      animate={{ y: [0, -2, 0] }}
+      transition={{ repeat: Infinity, duration: 2.5 }}
+      className="text-lg"
+      style={{ filter: "brightness(0) invert(1)" }}
+    >
+      ⚡
+    </motion.div>
+  </span>
+  Coil Independent
+</motion.button>
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}

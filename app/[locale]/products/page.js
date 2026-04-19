@@ -34,33 +34,41 @@ export default function ProductsPage() {
   }, []);
 
   async function submit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const res = await fetch("/api/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+  // ✅ 统一清洗：trim + 防止 undefined/null
+  const cleanedForm = Object.fromEntries(
+    Object.entries(form).map(([key, value]) => [
+      key,
+      typeof value === "string" ? value.trim() : value,
+    ])
+  );
+
+  const res = await fetch("/api/products", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cleanedForm),
+  });
+
+  const result = await res.json();
+
+  if (result.success) {
+    setForm({
+      model_number: "",
+      category: "",
+      manufacturer: "",
+      inner_diameter_mm: "",
+      temp_min_c: "",
+      temp_max_c: "",
+      pressure_min_bar: "",
+      pressure_max_bar: "",
+      connection: "",
     });
-
-    const result = await res.json();
-
-    if (result.success) {
-      setForm({
-        model_number: "",
-        category: "",
-        manufacturer: "",
-        inner_diameter_mm: "",
-        temp_min_c: "",
-        temp_max_c: "",
-        pressure_min_bar: "",
-        pressure_max_bar: "",
-        connection: "",
-      });
-      load();
-    } else {
-      alert(result.message);
-    }
+    load();
+  } else {
+    alert(result.message);
   }
+}
 
   async function remove(id) {
     if (!confirm("Delete this item?")) return;
@@ -163,7 +171,7 @@ export default function ProductsPage() {
                     peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2
                     peer-placeholder-shown:text-sm peer-placeholder-shown:font-medium peer-placeholder-shown:normal-case
                     peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px]
-                    peer-focus:text-sky-600 transition-all
+                    peer-focus:text-sky-600 transition-all pointer-events-none
                   ">
                     {label}
                   </label>
@@ -257,7 +265,7 @@ export default function ProductsPage() {
 
                       <div>
                         <h3 className="font-bold text-base md:text-lg text-slate-900 group-hover:text-sky-700">
-                          {p.model_number}
+                          {p.model_number_active}
                         </h3>
                         <p className="text-xs md:text-sm text-slate-500">
                           {p.manufacturer} | {p.category}
@@ -273,20 +281,30 @@ export default function ProductsPage() {
                     {/* mobile-friendly stack instead of strict grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-                      <div className="px-3 py-2 rounded-xl bg-sky-50 border border-sky-100 text-sm">
-                        Diameter: <b>{p.inner_diameter_mm}</b> mm
+                     <div className="px-3 py-2 rounded-xl bg-sky-50 border border-sky-100 text-sm flex items-center gap-2">
+                        ⚪
+                        <span>
+                          Diameter: <b>{p.inner_diameter_mm}</b> mm
+                        </span>
                       </div>
 
-                      <div className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-100 text-sm truncate">
-                        {p.connection}
+                      <div className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-100 text-sm truncate flex items-center gap-2">
+                      🔗
+                        <span>{p.connection}</span>
                       </div>
 
-                      <div className="px-3 py-2 rounded-xl bg-orange-50 border border-orange-100 text-sm">
-                        Temp: {p.temp_min_c} → {p.temp_max_c} °C
+                      <div className="px-3 py-2 rounded-xl bg-orange-50 border border-orange-100 text-sm flex items-center gap-2">
+                        🌡️
+                        <span>
+                          Temp: {p.temp_min_c} → {p.temp_max_c} °C
+                        </span>
                       </div>
 
-                      <div className="px-3 py-2 rounded-xl bg-violet-50 border border-violet-100 text-sm">
-                        Pressure: {p.pressure_min_bar} → {p.pressure_max_bar}
+                      <div className="px-3 py-2 rounded-xl bg-violet-50 border border-violet-100 text-sm flex items-center gap-2">
+                        ⏱️
+                        <span>
+                          Pressure: {p.pressure_min_bar} → {p.pressure_max_bar}
+                        </span>
                       </div>
 
                     </div>

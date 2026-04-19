@@ -276,7 +276,7 @@ return (
 
                   <div>
                     <h3 className="font-bold text-base md:text-lg text-slate-900 group-hover:text-sky-700">
-                      {c.coil_idp_model}
+                      {c.unique_key_active}
                     </h3>
 
                     <p className="text-xs md:text-sm text-slate-500">

@@ -155,8 +155,8 @@ export default function CoilStandardPage() {
             >
               <option value="">Select Valve Model</option>
               {products.map((p) => (
-                <option key={p.id} value={p.model_number}>
-                  {p.model_number} - {p.manufacturer}
+                <option key={p.id} value={p.model_number_active}>
+                  {p.model_number_active} - {p.manufacturer}
                 </option>
               ))}
             </select>
@@ -278,7 +278,7 @@ export default function CoilStandardPage() {
 
                   <div>
                     <h3 className="font-bold text-base md:text-lg text-slate-900 group-hover:text-sky-700">
-                      {c.coil_model}
+                      {c.unique_key_active}
                     </h3>
 
                     <p className="text-xs md:text-sm text-slate-500">
