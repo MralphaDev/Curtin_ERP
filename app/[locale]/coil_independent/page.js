@@ -6,7 +6,7 @@ import { Boxes, Plus ,Trash2} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
 
-export default function CoilIndependentPage() {
+export default function CoilIndependentPage({user}) {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const dict = getDictionary(locale);
@@ -119,10 +119,11 @@ return (
 
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
-            Coil Independent
+            {dict.coilIndependentTitle}
           </h1>
+
           <p className="text-xs md:text-sm text-slate-500">
-            Manage standalone coil inventory
+            {dict.coilIndependentDesc}
           </p>
         </div>
 
@@ -149,10 +150,11 @@ return (
 
             <div>
               <h2 className="font-semibold text-slate-900 text-sm md:text-base">
-                Create Coil
+                {dict.createCoilTitle}
               </h2>
+
               <p className="text-xs text-slate-500">
-                Add independent coil
+                {dict.createCoilDesc}
               </p>
             </div>
 
@@ -195,7 +197,7 @@ return (
                   focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition
                 "
                 inputMode="numeric"
-                placeholder="Voltage"
+                placeholder={dict.voltageValue}
                 value={voltageValue}
                 onKeyDown={(e) => {
                   if (
@@ -235,7 +237,7 @@ return (
               value={manufacturer}
               onChange={(e) => setManufacturer(e.target.value)}
             >
-              <option value="">Select Manufacturer</option>
+              <option value="">{dict.manufacturer}</option>
               <option value="JAKSA">JAKSA</option>
               <option value="CEME">CEME</option>
               <option value="ROTORK">ROTORK</option>
@@ -252,7 +254,7 @@ return (
                 shadow-lg shadow-sky-500/30
               "
             >
-              Create Coil
+              {dict.createInpCoilButton}
             </button>
 
           </form>
@@ -278,10 +280,10 @@ return (
 
               <div>
                 <h2 className="font-semibold text-slate-900 text-sm md:text-base">
-                  Independent Coils
+                  {dict.coilIndependentTitle}
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Manage standalone inventory
+                  {dict.coilIndependentDesc}
                 </p>
               </div>
 
@@ -293,7 +295,7 @@ return (
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
 
               <span className="font-medium">
-                {coils.length} items
+                {coils.length} {dict.coilListCount}
               </span>
 
             </div>
@@ -336,19 +338,20 @@ return (
                 </div>
 
                 {/* DELETE */}
-                <button
-                  onClick={() =>
-                    deleteCoil(c.id, ITEM_TYPES.COIL_INDEPENDENT)
-                  }
-                  className="
-                    p-2 rounded-lg text-slate-400
+                {user.role === "admin" && (
+                  <button
+                    onClick={() =>
+                      deleteCoil(c.id, ITEM_TYPES.COIL_INDEPENDENT)
+                    }
+                    className="
+                      p-2 rounded-lg text-slate-400
                     opacity-0 group-hover:opacity-100
                     hover:bg-red-50 hover:text-red-500
                     transition-all duration-200
                   "
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </button>)}
 
               </div>
 
@@ -357,12 +360,12 @@ return (
 
                 {/* ⚡ VOLTAGE */}
                 <div className="px-3 py-2 rounded-xl bg-sky-50 border border-sky-100 text-sm">
-                  ⚡ Voltage: <b>{c.voltage}</b>
+                  ⚡ {dict.voltageValue}: <b>{c.voltage}</b>
                 </div>
 
                 {/* 📦 STOCK */}
                 <div className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-100 text-sm">
-                  📦 Stock: <b>{c.stock}</b>
+                  📦 {dict.stock}: <b>{c.stock}</b>
                 </div>
 
               </div>

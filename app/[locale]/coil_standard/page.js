@@ -6,7 +6,7 @@ import { ITEM_TYPES } from "@/lib/constants/itemTypes";
 import { Boxes, Plus, Trash2, Loader2 } from "lucide-react";
 import { getDictionary } from "@/lib/dictionary";
 
-export default function CoilStandardPage() {
+export default function CoilStandardPage({user}) {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const dict = getDictionary(locale);
@@ -108,10 +108,10 @@ export default function CoilStandardPage() {
 
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
-            Coil Standard
+             {dict.coilStandardTitle}
           </h1>
           <p className="text-xs md:text-sm text-slate-500">
-            Coil mapping configuration system
+            {dict.coilStandardDesc}
           </p>
         </div>
 
@@ -138,11 +138,12 @@ export default function CoilStandardPage() {
 
             <div>
               <h2 className="font-semibold text-slate-900 text-sm md:text-base">
-                Create Coil
-              </h2>
-              <p className="text-xs text-slate-500">
-                Add new coil standard
-              </p>
+              {dict.createCoilTitle}
+            </h2>
+
+            <p className="text-xs text-slate-500">
+              {dict.createCoilDesc}
+            </p>
             </div>
 
           </div>
@@ -159,7 +160,7 @@ export default function CoilStandardPage() {
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
             >
-              <option value="">Select Valve Model</option>
+              <option value="">{dict.selectValveModel}</option>
               {products.map((p) => (
                 <option key={p.id} value={p.model_number_active}>
                   {p.model_number_active} - {p.manufacturer}
@@ -168,7 +169,7 @@ export default function CoilStandardPage() {
             </select>
 
             <div className="text-xs text-slate-500">
-              Selected: <b>{selectedModel || "-"}</b>
+              {dict.selected}: <b>{selectedModel || "-"}</b>
             </div>
 
             {/* INPUT ROW (RESPONSIVE FIX) */}
@@ -177,7 +178,7 @@ export default function CoilStandardPage() {
               <input
                 type="text"
                 inputMode="numeric"
-                placeholder="Voltage value"
+                placeholder= {dict.voltageValue}
                 className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
                 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition"
                 value={voltageValue}
@@ -216,7 +217,7 @@ export default function CoilStandardPage() {
             value={manufacturer}
             onChange={(e) => setManufacturer(e.target.value)}
           >
-            <option value="">Select Manufacturer</option>
+            <option value="">{dict.manufacturer}</option>
             <option value="JAKSA">JAKSA</option>
             <option value="CEME">CEME</option>
             <option value="ROTORK">ROTORK</option>
@@ -234,7 +235,7 @@ export default function CoilStandardPage() {
                 shadow-lg shadow-sky-500/30
               "
             >
-              Create Coil Standard
+              {dict.createCoilButton}
             </button>
 
           </form>
@@ -260,17 +261,18 @@ export default function CoilStandardPage() {
 
               <div>
                 <h2 className="font-semibold text-slate-900 text-sm md:text-base">
-                  Coil List
+                  {dict.coilListTitle}
                 </h2>
+
                 <p className="text-xs text-slate-500">
-                  Manage standard coils
+                  {dict.coilListDesc}
                 </p>
               </div>
 
             </div>
 
             <div className="px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-slate-100 border border-slate-200 text-xs text-slate-600">
-              {coils.length} items
+              {coils.length} {dict.coilListCount}
             </div>
 
           </div>
@@ -311,17 +313,18 @@ export default function CoilStandardPage() {
                 </div>
 
                 {/* DELETE (Product.js style) */}
-                <button
-                  onClick={() => deleteCoil(c.id, ITEM_TYPES.COIL_STANDARD)}
-                  className="
-                    p-2 rounded-lg text-slate-400
-                    opacity-0 group-hover:opacity-100
-                    hover:bg-red-50 hover:text-red-500
+                {user.role === "admin" && (
+                  <button
+                    onClick={() => deleteCoil(c.id, ITEM_TYPES.COIL_STANDARD)}
+                    className="
+                      p-2 rounded-lg text-slate-400
+                      opacity-0 group-hover:opacity-100
+                      hover:bg-red-50 hover:text-red-500
                     transition-all duration-200
                   "
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </button>)}
 
               </div>
 
@@ -330,12 +333,12 @@ export default function CoilStandardPage() {
 
                 {/* ⚡ VOLTAGE */}
                 <div className="px-3 py-2 rounded-xl bg-sky-50 border border-sky-100 text-sm">
-                  ⚡ Voltage <b>{c.voltage}</b>
+                  ⚡ {dict.voltageValue}: <b>{c.voltage}</b>
                 </div>
 
                 {/* 🏭 MANUFACTURER */}
                 <div className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-100 text-sm">
-                  🏭 {c.manufacturer}
+                  🏭 {dict.manufacturerBody}: {c.manufacturer}
                 </div>
 
               </div>
@@ -345,7 +348,7 @@ export default function CoilStandardPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   📦 <span className="text-sm font-semibold text-emerald-700">
-                    Stock: {c.stock}
+                    {dict.stock}: {c.stock}
                   </span>
                 </div>
               </div>

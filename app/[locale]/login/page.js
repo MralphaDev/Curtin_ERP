@@ -11,6 +11,9 @@ export default function LoginPage() {
   const { locale } = useParams();
   const dict = getDictionary(locale);
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,7 +25,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "admin", password: "123" }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (res.ok) {
@@ -38,38 +41,43 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-blue-100 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-blue-100">
       <LanguageSwitcher />
-      {/* 🌈 BACKGROUND BLOBS */}
-      <div className="absolute top-[-120px] left-[-120px] w-[300px] h-[300px] bg-blue-300 rounded-full blur-3xl opacity-30 animate-pulse" />
-      <div className="absolute bottom-[-120px] right-[-120px] w-[300px] h-[300px] bg-sky-300 rounded-full blur-3xl opacity-30 animate-pulse" />
 
-      {/* 🔐 LOGIN CARD */}
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-sm p-8 rounded-3xl bg-white/70 backdrop-blur-xl shadow-2xl border border-white/40"
+        className="w-full max-w-sm p-8 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
       >
-        {/* 🏷 TITLE */}
-        <h1 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-blue-500 to-sky-400 bg-clip-text text-transparent">
+        <h1 className="text-xl font-bold mb-6 text-center">
           {dict.curtinims}
         </h1>
 
-        {/* 🔘 LOGIN BUTTON */}
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+        <input
+          className="w-full mb-3 px-3 py-2 border rounded"
+          placeholder="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+
+        <input
+          className="w-full mb-4 px-3 py-2 border rounded"
+          placeholder="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-sky-400 text-white font-medium shadow-md hover:shadow-lg transition"
+          className="w-full py-2 bg-blue-500 text-white rounded"
         >
-          {loading ? dict.loading : dict.login}
-        </motion.button>
+          {loading ? "Loading..." : dict.login}
+        </button>
 
-        {/* ⚠️ ERROR */}
         {error && (
-          <p className="text-red-500 text-sm text-center mt-4">
+          <p className="text-red-500 text-sm mt-3 text-center">
             {error}
           </p>
         )}

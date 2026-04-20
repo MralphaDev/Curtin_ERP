@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState,useEffect} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getDictionary } from "@/lib/dictionary";
 import LanguageSwitcher from "../langSwitcher";
@@ -9,6 +9,7 @@ import ProductsPage from "@/app/[locale]/products/page";
 import NewInventory from "../inventory/page";
 import CoilStandardPage from "../coil_standard/page";
 import CoilIndependentPage from "../coil_independent/page";
+import UserMenu from "../userMenu";
 
 import {
   Box,
@@ -24,6 +25,22 @@ export default function Dashboard() {
   const dict = getDictionary(locale);
 
   const [active, setActive] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      const res = await fetch("/api/auth/me");
+      const data = await res.json();
+
+      if (data.ok) {
+        setUser(data.user);
+      }
+    }
+
+    load();
+  }, []);
+
+  if (!user) return <div>Loading...</div>;
 
   const buttonClass =
   "px-6 py-3 rounded-2xl bg-white/70 backdrop-blur-md shadow-md hover:shadow-xl transition-all duration-300 border border-blue-100 hover:-translate-y-1 flex items-center gap-3";
@@ -33,6 +50,7 @@ const iconWrapper =
   return (
 <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-white via-blue-50 to-blue-100 flex flex-col items-center justify-center p-4 md:p-6">
   <LanguageSwitcher />
+  <UserMenu />
   <AnimatePresence mode="wait">
 
     {!active ? (
@@ -195,10 +213,10 @@ const iconWrapper =
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-          {active === "products" && <ProductsPage />}
-          {active === "coilStandard" && <CoilStandardPage />}
-          {active === "coilIndependent" && <CoilIndependentPage />}
-          {active === "inventory" && <NewInventory />}
+          {active === "products" && <ProductsPage user={user} />}
+          {active === "coilStandard" && <CoilStandardPage user={user}/>}
+          {active === "coilIndependent" && <CoilIndependentPage user={user} />}
+          {active === "inventory" && <NewInventory user={user}/>}
         </div>
 
       </motion.div>

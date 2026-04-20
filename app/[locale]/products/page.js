@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
 import { Plus, Package, Trash2, Loader2, Thermometer, Gauge, Circle, Link2, Boxes } from "lucide-react";
 
-export default function ProductsPage() {
+export default function ProductsPage({ user }) {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const dict = getDictionary(locale);
@@ -145,15 +145,15 @@ const CATEGORIES = [
 ];
 
 const fields = [
-  ["model_number", "Model Number", "text"],
-  ["category", "Category", "select", CATEGORIES],
-  ["manufacturer", "Manufacturer", "select", MANUFACTURERS],
-  ["inner_diameter_mm", "Inner Diameter (mm)", "int"],
-  ["temp_min_c", "Temp Min (°C)", "int"],
-  ["temp_max_c", "Temp Max (°C)", "int"],
-  ["pressure_min_bar", "Pressure Min (bar)", "int"],
-  ["pressure_max_bar", "Pressure Max (bar)", "int"],
-  ["connection", "Connection Type", "text"],
+  ["model_number", dict.modelNumber, "text"],
+  ["category", dict.category, "select", CATEGORIES],
+  ["manufacturer", dict.manufacturerBody, "select", MANUFACTURERS],
+  ["inner_diameter_mm", dict.innerDiameter, "int"],
+  ["temp_min_c", dict.tempMin, "int"],
+  ["temp_max_c", dict.tempMax, "int"],
+  ["pressure_min_bar", dict.pressureMin, "int"],
+  ["pressure_max_bar", dict.pressureMax, "int"],
+  ["connection", dict.connectionType, "text"],
 ];
 
 
@@ -178,10 +178,11 @@ const fields = [
 
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
-            Body
+            {dict.bodyTitle}
           </h1>
+
           <p className="text-slate-500 text-xs md:text-sm">
-            Lightweight valve catalog management system
+            {dict.bodyDesc}
           </p>
         </div>
 
@@ -205,10 +206,11 @@ const fields = [
             </div>
             <div>
               <h2 className="font-semibold text-slate-900 text-sm md:text-base">
-                Create Body
+                {dict.createBodyTitle}
               </h2>
+
               <p className="text-xs text-slate-500">
-                Add new product to inventory
+                {dict.createBodyDesc}
               </p>
             </div>
           </div>
@@ -317,7 +319,7 @@ const fields = [
                 shadow-lg shadow-sky-500/30
               "
             >
-              Create Product
+              {dict.createProduct}
             </button>
 
           </form>
@@ -342,12 +344,13 @@ const fields = [
               </div>
 
               <div>
-                <h2 className="font-semibold text-slate-900 text-sm md:text-base">
-                  Product List
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Manage your inventory
-                </p>
+               <h2 className="font-semibold text-slate-900 text-sm md:text-base">
+                {dict.productListTitle}
+              </h2>
+
+              <p className="text-xs text-slate-500">
+                {dict.productListDesc}
+              </p>
               </div>
 
             </div>
@@ -359,10 +362,9 @@ const fields = [
               ) : (
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               )}
-
-              <span className="text-xs font-medium text-slate-600">
-                {loading ? "Loading..." : `${products.length} items`}
-              </span>
+            <span className="text-xs font-medium text-slate-600">
+              {loading ? dict.loading : `${products.length} ${dict.items}`}
+            </span>
 
             </div>
 
@@ -398,40 +400,42 @@ const fields = [
                         </p>
                       </div>
 
-                      <button className="p-2 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
-                        <Trash2 onClick={() => remove(p.id)} className="w-4 h-4" />
-                      </button>
+                      {user.role === "admin" && (
+                        <button className="p-2 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
+                          <Trash2 onClick={() => remove(p.id)} className="w-4 h-4" />
+                        </button>
+                      )}
 
                     </div>
 
                     {/* mobile-friendly stack instead of strict grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-                     <div className="px-3 py-2 rounded-xl bg-sky-50 border border-sky-100 text-sm flex items-center gap-2">
-                        ⚪
-                        <span>
-                          Diameter: <b>{p.inner_diameter_mm}</b> mm
-                        </span>
-                      </div>
+                    <div className="px-3 py-2 rounded-xl bg-sky-50 border border-sky-100 text-sm flex items-center gap-2">
+                      ⚪
+                      <span>
+                        {dict.diameter}: <b>{p.inner_diameter_mm}</b> mm
+                      </span>
+                    </div>
 
-                      <div className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-100 text-sm truncate flex items-center gap-2">
+                    <div className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-100 text-sm truncate flex items-center gap-2">
                       🔗
-                        <span>{p.connection}</span>
-                      </div>
+                      <span>{p.connection}</span>
+                    </div>
 
-                      <div className="px-3 py-2 rounded-xl bg-orange-50 border border-orange-100 text-sm flex items-center gap-2">
-                        🌡️
-                        <span>
-                          Temp: {p.temp_min_c} → {p.temp_max_c} °C
-                        </span>
-                      </div>
+                    <div className="px-3 py-2 rounded-xl bg-orange-50 border border-orange-100 text-sm flex items-center gap-2">
+                      🌡️
+                      <span>
+                        {dict.temp}: {p.temp_min_c} → {p.temp_max_c} °C
+                      </span>
+                    </div>
 
-                      <div className="px-3 py-2 rounded-xl bg-violet-50 border border-violet-100 text-sm flex items-center gap-2">
-                        ⏱️
-                        <span>
-                          Pressure: {p.pressure_min_bar} → {p.pressure_max_bar}
-                        </span>
-                      </div>
+                    <div className="px-3 py-2 rounded-xl bg-violet-50 border border-violet-100 text-sm flex items-center gap-2">
+                      ⏱️
+                      <span>
+                        {dict.pressure}: {p.pressure_min_bar} → {p.pressure_max_bar} bar
+                      </span>
+                    </div>
 
                     </div>
 

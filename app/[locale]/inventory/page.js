@@ -6,7 +6,7 @@ import { ITEM_TYPES } from "@/lib/constants/itemTypes";
 import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
 
-export default function NewInventory() {
+export default function NewInventory({ user }) {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const dict = getDictionary(locale);
@@ -310,39 +310,46 @@ return (
     <div className="mb-10">
       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100/80 text-sky-600 text-xs font-medium mb-4 backdrop-blur-sm border border-sky-200/50">
         <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-        Stock Management
+        {dict.stockManagement}
       </div>
+
       <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 bg-clip-text text-transparent">
-        Inventory Events
+        {dict.inventoryEvents}
       </h1>
+
       <p className="text-slate-500 text-base mt-2 max-w-md">
-        Seamlessly manage your IN / OUT stock movements with precision
+        {dict.inventoryEventsDesc}
       </p>
     </div>
 
     {/* TOP CONTROLS */}
     <div className="mb-8 flex flex-wrap items-end gap-6 p-6 rounded-3xl bg-white/60 backdrop-blur-xl border border-sky-100/80 shadow-lg shadow-sky-100/20">
       <div className="flex flex-col gap-2">
-        <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Mode</label>
+        <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{dict.mode}</label>
         <select
           onChange={(e) => setMode(e.target.value)}
           className="min-w-[200px] rounded-2xl border-2 border-sky-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-sky-300 focus:border-sky-400 focus:ring-4 focus:ring-sky-100 focus:outline-none cursor-pointer appearance-none"
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '20px' }}
         >
-          <option value="">Select Mode</option>
-          {Object.values(INVENTORY_MODES).map((m) => (
+          <option value="">{dict.selectMode}</option>
+          {/*Object.values(INVENTORY_MODES).map((m) => (
             <option key={m} value={m}>{m}</option>
+          ))*/}
+          {Object.values(INVENTORY_MODES).map((m) => (
+            <option key={m} value={m}>
+              {dict.inventoryModes[m]}
+            </option>
           ))}
         </select>
       </div>
 
       <div className="flex flex-col gap-2 flex-1 max-w-md">
-        <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Company</label>
+        <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{dict.company}</label>
         <input
           type="text"
           value={company}
           onChange={(e) => setCompany(e.target.value)}
-          placeholder="Enter company name..."
+          placeholder={dict.companyPlaceholder}
           className="w-full rounded-2xl border-2 border-sky-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-sky-300 focus:border-sky-400 focus:ring-4 focus:ring-sky-100 focus:outline-none placeholder:text-slate-400"
         />
       </div>
@@ -364,8 +371,13 @@ return (
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-emerald-600">IN</h2>
-            <p className="text-sm text-slate-500">Add stock to inventory</p>
+           <h2 className="text-2xl font-bold text-emerald-600">
+            {dict.in}
+          </h2>
+
+          <p className="text-sm text-slate-500">
+            {dict.addStockToInventory}
+          </p>
           </div>
         </div>
 
@@ -378,7 +390,7 @@ return (
               onChange={(e) => setInSelectedValve(Number(e.target.value))}
               className="w-full rounded-2xl border-2 border-emerald-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-emerald-300 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 focus:outline-none cursor-pointer"
             >
-              <option value="">Select Valve</option>
+              <option value="">{dict.selectValveModel}</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>{p.model_number_active}</option>
                 
@@ -393,7 +405,7 @@ return (
               onChange={(e) => setInSelectedCoilStd(Number(e.target.value))}
               className="w-full rounded-2xl border-2 border-emerald-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-emerald-300 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 focus:outline-none cursor-pointer"
             >
-              <option value="">Select Coil Standard</option>
+              <option value="">{dict.selectedCoilStd}</option>
               {coilStd.map((c) => (
                 <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
@@ -407,7 +419,7 @@ return (
               onChange={(e) => setInSelectedCoilIndp(Number(e.target.value))}
               className="w-full rounded-2xl border-2 border-emerald-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-emerald-300 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 focus:outline-none cursor-pointer"
             >
-              <option value="">Select Coil Independent</option>
+              <option value="">{dict.selectedCoilInd}</option>
               {coilIndp.map((c) => (
                 <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
@@ -431,7 +443,7 @@ return (
               <svg className="w-5 h-5 transition-transform duration-300 group-hover/btn:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
-              Submit IN
+              {dict.submitIn}
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
           </button>
@@ -451,8 +463,13 @@ return (
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-rose-600">OUT</h2>
-            <p className="text-sm text-slate-500">Remove stock from inventory</p>
+          <h2 className="text-2xl font-bold text-rose-600">
+              {dict.out}
+            </h2>
+
+            <p className="text-sm text-slate-500">
+              {dict.removeStockFromInventory}
+            </p>
           </div>
         </div>
 
@@ -465,7 +482,7 @@ return (
               onChange={(e) => setOutSelectedValve(Number(e.target.value))}
               className="w-full rounded-2xl border-2 border-rose-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-rose-300 focus:border-rose-400 focus:ring-4 focus:ring-rose-100 focus:outline-none cursor-pointer"
             >
-              <option value="">Select Valve</option>
+              <option value="">{dict.selectValveModel}</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>{p.model_number_active}</option>
               ))}
@@ -478,7 +495,7 @@ return (
               onChange={(e) => setOutSelectedCoilStd(Number(e.target.value))}
               className="w-full rounded-2xl border-2 border-rose-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-rose-300 focus:border-rose-400 focus:ring-4 focus:ring-rose-100 focus:outline-none cursor-pointer"
             >
-              <option value="">Select Coil Standard</option>
+              <option value="">{dict.selectedCoilStd}</option>
               {coilStd.map((c) => (
                 <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
@@ -492,7 +509,7 @@ return (
               onChange={(e) => setOutSelectedCoilIndp(Number(e.target.value))}
               className="w-full rounded-2xl border-2 border-rose-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-rose-300 focus:border-rose-400 focus:ring-4 focus:ring-rose-100 focus:outline-none cursor-pointer"
             >
-              <option value="">Select Coil Independent</option>
+              <option value="">{dict.selectedCoilInd}</option>
               {coilIndp.map((c) => (
                 <option key={c.id} value={c.id}>{c.unique_key_active}</option>
               ))}
@@ -516,7 +533,7 @@ return (
               <svg className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
-              Submit OUT
+              {dict.submitOut}
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-red-400 via-rose-400 to-red-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
           </button>
@@ -538,10 +555,10 @@ return (
 
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-slate-800">
-            Event History
+            {dict.history}
           </h2>
           <p className="text-xs md:text-sm text-slate-500">
-            Track all inventory movements
+            {dict.historyDesc}
           </p>
         </div>
 
@@ -591,11 +608,11 @@ return (
                         ? 'bg-emerald-100 text-emerald-700'
                         : 'bg-rose-100 text-rose-700'
                     }`}>
-                      {event.action}
+                     {dict.eventAction[event.action]}
                     </span>
 
                     <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-sky-100 text-sky-700 text-xs font-semibold">
-                      {event.mode}
+                      {dict.inventoryModes[event.mode] || event.mode}
                     </span>
 
                   </div>
@@ -628,14 +645,15 @@ return (
               </div>
 
               {/* DELETE BUTTON */}
-              <button
-                onClick={() => deleteEvent(event.id)}
-                className="opacity-0 group-hover:opacity-100 md:opacity-0 flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 text-red-500 transition-all duration-300 hover:bg-red-100 hover:scale-110 active:scale-95 self-end md:self-start flex-shrink-0"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              {user.role === "admin" && (
+                <button
+                  onClick={() => deleteEvent(event.id)}
+                  className="opacity-0 group-hover:opacity-100 md:opacity-0 flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 text-red-500 transition-all duration-300 hover:bg-red-100 hover:scale-110 active:scale-95 self-end md:self-start flex-shrink-0"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-              </button>
+              </button>)}
 
             </div>
 

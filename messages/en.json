@@ -10,5 +10,76 @@
   "coilStandard": "Coil Standard",
   "coilIndependent": "Coil Independent",
   "inventory": "Inventory",
-  "back": "Back to Dashboard"
+  "back": "Back to Dashboard",
+
+  "coilStandardTitle": "Coil Standard",
+  "coilStandardDesc": "Coil mapping configuration system",
+  "createCoilTitle": "Create Coil",
+  "createCoilDesc": "Add new coil standard",
+  "selectValveModel": "Select Valve Model",
+  "selected": "Selected",
+  "voltageValue": "Voltage Value",
+  "manufacturer": "Select Manufacturer",
+  "createCoilButton": "Create Coil Standard",
+    "coilListTitle": "Coil List",
+  "coilListDesc": "Manage standard coils",
+  "coilListCount": "items",
+
+
+   "bodyTitle": "Body",
+  "bodyDesc": "Lightweight valve catalog management system",
+   "createBodyTitle": "Create Body",
+  "createBodyDesc": "Add new product to inventory",
+  "modelNumber": "Model Number",
+  "category": "Category",
+  "manufacturerBody": "Manufacturer",
+  "innerDiameter": "Inner Diameter (mm)",
+  "tempMin": "Temp Min (°C)",
+  "tempMax": "Temp Max (°C)",
+  "pressureMin": "Pressure Min (bar)",
+  "pressureMax": "Pressure Max (bar)",
+  "connectionType": "Connection Type",
+   "productListTitle": "Product List",
+  "productListDesc": "Manage your inventory",
+  "items": "items",
+  "diameter": "Diameter",
+  "temp": "Temp",
+  "pressure": "Pressure",
+  "createProduct": "Create Body",
+
+    "coilIndependentTitle": "Coil Independent List",
+  "coilIndependentDesc": "Manage standalone coil inventory",
+  "createInpCoilButton": "Create Coil Independent",
+  "stock": "Stock",
+
+  "stockManagement": "Stock Management",
+  "inventoryEvents": "Inventory Events",
+  "inventoryEventsDesc": "Seamlessly manage your IN / OUT stock movements with precision",
+  "mode": "Mode",
+  "selectMode": "Select Mode",
+  "inventoryModes": {
+    "VALVE_ONLY": "Valve Only",
+    "COIL_STANDARD_ONLY": "Coil Standard Only",
+    "COIL_INDEPENDENT_ONLY": "Coil Independent Only",
+    "VALVE_PLUS_STANDARD": "Valve + Standard Coil",
+    "VALVE_PLUS_INDEPENDENT": "Valve + Independent Coil"
+  },
+  "company": "Company",
+  "companyPlaceholder": "Enter company name...",
+   "in": "IN",
+  "addStockToInventory": "Add stock to inventory",
+  "selectedCoilStd": "Selected Coil Standard",
+  "selectedCoilInd": "Selected Coil Independent",
+  "submitIn": "Submit IN",
+    "out": "OUT",
+  "removeStockFromInventory": "Remove stock from inventory",
+  "submitOut": "Submit OUT",
+  "history": "Event History",
+  "historyDesc": "Track all inventory movements",
+  "eventAction": {
+    "IN": "IN",
+    "OUT": "OUT"
+  }
+  
+
 }
