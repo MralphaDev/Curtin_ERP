@@ -160,6 +160,7 @@ const iconWrapper =
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-sm sm:text-base md:text-lg text-gray-600 font-medium leading-snug"
+              lang="zh"
             >
               {dict.curtinims}
             </motion.div>
