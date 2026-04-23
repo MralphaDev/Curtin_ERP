@@ -640,91 +640,92 @@ return (
       </div>
 
         {/* FILTERS BUTTONS*/}
-{/* FILTER BAR */}
-<div className="mb-4">
-  
-  {/* GLOBAL LABEL */}
-  <div className="text-xs text-gray-500 mb-2">
-    Filters (Date Range / Company / Model)
-  </div>
+        {/* FILTER BAR */}
+        <div className="mb-4">
+          
+          {/* GLOBAL LABEL */}
+          <div className="text-xs text-gray-500 mb-2">
+            Filters (Date Range / Company / Model)
+          </div>
 
-  <div className="flex flex-wrap gap-2 items-end">
+          <div className="flex flex-wrap gap-2 items-end">
 
-    {/* DATE START */}
-    <div className="flex flex-col">
-      <span className="text-[11px] text-gray-400 mb-1">From</span>
-      <input
-        type="date"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        className="border rounded-lg px-3 py-2 text-sm"
-      />
-    </div>
+            {/* DATE START */}
+            <div className="flex flex-col">
+              <span className="text-[11px] text-gray-400 mb-1">From</span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
 
-    {/* DATE END */}
-    <div className="flex flex-col">
-      <span className="text-[11px] text-gray-400 mb-1">To</span>
-      <input
-        type="date"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        className="border rounded-lg px-3 py-2 text-sm"
-      />
-    </div>
+            {/* DATE END */}
+            <div className="flex flex-col">
+              <span className="text-[11px] text-gray-400 mb-1">To</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
 
-    {/* COMPANY FILTER */}
-    <div className="flex flex-col">
-      <span className="text-[11px] text-gray-400 mb-1">Company</span>
-      <select
-        value={selectedCompany}
-        onChange={(e) => setSelectedCompany(e.target.value)}
-        className="border rounded-lg px-3 py-2 text-sm"
-      >
-        <option value="">All</option>
-        {companies.map((c) => (
-          <option key={c} value={c}>
-            {c}
-          </option>
-        ))}
-      </select>
-    </div>
+            {/* COMPANY FILTER */}
+            <div className="flex flex-col">
+              <span className="text-[11px] text-gray-400 mb-1">Company</span>
+              <select
+                value={selectedCompany}
+                onChange={(e) => setSelectedCompany(e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="">All</option>
+                {companies.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-    {/* MODEL SEARCH */}
-    <div className="flex flex-col">
-      <span className="text-[11px] text-gray-400 mb-1">Model</span>
-      <input
-        value={modelSearch}
-        onChange={(e) => setModelSearch(e.target.value)}
-        placeholder="Search model..."
-        className="border rounded-lg px-3 py-2 text-sm min-w-[200px]"
-      />
-      {isSearching && (
-        <span className="text-xs text-slate-400 mt-1">Searching...</span>
-      )}
-    </div>
+            {/* MODEL SEARCH */}
+            <div className="flex flex-col">
+              <span className="text-[11px] text-gray-400 mb-1">Model</span>
+              <input
+                value={modelSearch}
+                onChange={(e) => setModelSearch(e.target.value)}
+                placeholder="Search model..."
+                className="border rounded-lg px-3 py-2 text-sm min-w-[200px]"
+              />
+              {isSearching && (
+                <span className="text-xs text-slate-400 mt-1">Searching...</span>
+              )}
+            </div>
 
-    {/* RESET */}
-    <div className="flex flex-col">
-      <span className="text-[11px] text-gray-400 mb-1 opacity-0">
-        Reset
-      </span>
-      <button
-        onClick={() => {
-          setStartDate("");
-          setEndDate("");
-          setSelectedCompany("");
-          setModelSearch("");
-        }}
-        className="px-3 py-2 text-sm rounded-lg bg-slate-100 hover:bg-slate-200"
-      >
-        Reset
-      </button>
-    </div>
+            {/* RESET */}
+            <div className="flex flex-col">
+              <span className="text-[11px] text-gray-400 mb-1 opacity-0">
+                Reset
+              </span>
+              <button
+                onClick={() => {
+                  setStartDate("");
+                  setEndDate("");
+                  setSelectedCompany("");
+                  setModelSearch("");
+                }}
+                className="px-3 py-2 text-sm rounded-lg bg-slate-100 hover:bg-slate-200"
+              >
+                Reset
+              </button>
+            </div>
 
-  </div>
-</div>
-            {/* LIST */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          </div>
+        </div>
+
+        {/* EVENT LIST */}
+      <div className="max-h-[500px] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
         {/* LEFT: IN */}
         <div className="flex flex-col gap-3 md:gap-4">
