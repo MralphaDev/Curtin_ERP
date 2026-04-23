@@ -249,7 +249,9 @@ const iconWrapper =
             {dict.inventory}
           </motion.button>
 
-           <motion.button
+          
+
+           {user?.role =="admin" && (<motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={buttonClass}
@@ -264,7 +266,7 @@ const iconWrapper =
               </motion.div>
             </span>
             {dict.businessIntelligence}
-          </motion.button>
+          </motion.button>)}
 
         </div>
 
@@ -293,7 +295,7 @@ const iconWrapper =
           {active === "coilStandard" && <CoilStandardPage user={user}/>}
           {active === "coilIndependent" && <CoilIndependentPage user={user} />}
           {active === "inventory" && <NewInventory user={user}/>}
-          {active ==="business-intelligence" && <BusinessIntelligence user={user}/>}
+          {active === "business-intelligence"  && (<BusinessIntelligence user={user} />)}
         </div>
 
       </motion.div>

@@ -49,6 +49,10 @@ export default function NewInventory({ user }) {
 const [endDate, setEndDate] = useState("");
 const [selectedCompany, setSelectedCompany] = useState("");
 
+const [modelSearch, setModelSearch] = useState("");
+const [searchResults, setSearchResults] = useState([]);
+const [isSearching, setIsSearching] = useState(false);
+
 
 
   // ================================
@@ -80,6 +84,32 @@ const [selectedCompany, setSelectedCompany] = useState("");
       .then(setEvents);
     
   }, []);
+
+  //debounced search for inventory events by valve model number (searches both IN and OUT events)
+  useEffect(() => {
+  if (!modelSearch) {
+    setSearchResults([]);
+    return;
+  }
+
+  const timeout = setTimeout(async () => {
+    setIsSearching(true);
+
+    try {
+      const res = await fetch(
+        `/api/inventory-event/search?model=${modelSearch}`
+      );
+
+      const data = await res.json();
+      setSearchResults(data);
+
+    } finally {
+      setIsSearching(false);
+    }
+  }, 300);
+
+  return () => clearTimeout(timeout);
+}, [modelSearch]);
 
   // ================================
   // 🧠 BUILD ITEMS 
@@ -294,7 +324,8 @@ async function deleteEvent(id) {
   // setStock(updatedStock);
 }
 
-const filteredEvents = events.filter((event) => {
+const baseEvents = modelSearch.trim().length > 0 ? searchResults : events;
+const filteredEvents = baseEvents.filter((event) => {
   const time = new Date(event.created_at).getTime();
 
   const startOk = startDate
@@ -311,6 +342,26 @@ const filteredEvents = events.filter((event) => {
 
   return startOk && endOk && companyOk;
 });
+
+
+ /* 
+const filteredEvents = events.filter((event) => {
+  const time = new Date(event.created_at).getTime();
+
+  const startOk = startDate
+    ? time >= new Date(startDate).getTime()
+    : true;
+
+  const endOk = endDate
+    ? time <= new Date(endDate + "T23:59:59").getTime()
+    : true;
+
+  const companyOk = selectedCompany
+    ? event.company === selectedCompany
+    : true;
+
+  return startOk && endOk && companyOk;
+});*/
 
   //frontend in/out event split layout 
 const inEvents = filteredEvents.filter(e => e.action === "IN");
@@ -588,52 +639,90 @@ return (
 
       </div>
 
-          {/* FILTERS DATE BUTTONS*/}
-      <div className="flex flex-wrap gap-2 mb-4">
+        {/* FILTERS BUTTONS*/}
+{/* FILTER BAR */}
+<div className="mb-4">
+  
+  {/* GLOBAL LABEL */}
+  <div className="text-xs text-gray-500 mb-2">
+    Filters (Date Range / Company / Model)
+  </div>
 
-        {/* DATE START */}
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm"
-        />
+  <div className="flex flex-wrap gap-2 items-end">
 
-        {/* DATE END */}
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm"
-        />
+    {/* DATE START */}
+    <div className="flex flex-col">
+      <span className="text-[11px] text-gray-400 mb-1">From</span>
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="border rounded-lg px-3 py-2 text-sm"
+      />
+    </div>
 
-        {/* COMPANY FILTER */}
-        <select
-          value={selectedCompany}
-          onChange={(e) => setSelectedCompany(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm"
-        >
-          <option value="">All Companies</option>
-          {companies.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+    {/* DATE END */}
+    <div className="flex flex-col">
+      <span className="text-[11px] text-gray-400 mb-1">To</span>
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        className="border rounded-lg px-3 py-2 text-sm"
+      />
+    </div>
 
-        {/* RESET */}
-        <button
-          onClick={() => {
-            setStartDate("");
-            setEndDate("");
-            setSelectedCompany("");
-          }}
-          className="px-3 py-2 text-sm rounded-lg bg-slate-100 hover:bg-slate-200"
-        >
-          Reset
-        </button>
+    {/* COMPANY FILTER */}
+    <div className="flex flex-col">
+      <span className="text-[11px] text-gray-400 mb-1">Company</span>
+      <select
+        value={selectedCompany}
+        onChange={(e) => setSelectedCompany(e.target.value)}
+        className="border rounded-lg px-3 py-2 text-sm"
+      >
+        <option value="">All</option>
+        {companies.map((c) => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+      </select>
+    </div>
 
-      </div>
+    {/* MODEL SEARCH */}
+    <div className="flex flex-col">
+      <span className="text-[11px] text-gray-400 mb-1">Model</span>
+      <input
+        value={modelSearch}
+        onChange={(e) => setModelSearch(e.target.value)}
+        placeholder="Search model..."
+        className="border rounded-lg px-3 py-2 text-sm min-w-[200px]"
+      />
+      {isSearching && (
+        <span className="text-xs text-slate-400 mt-1">Searching...</span>
+      )}
+    </div>
+
+    {/* RESET */}
+    <div className="flex flex-col">
+      <span className="text-[11px] text-gray-400 mb-1 opacity-0">
+        Reset
+      </span>
+      <button
+        onClick={() => {
+          setStartDate("");
+          setEndDate("");
+          setSelectedCompany("");
+          setModelSearch("");
+        }}
+        className="px-3 py-2 text-sm rounded-lg bg-slate-100 hover:bg-slate-200"
+      >
+        Reset
+      </button>
+    </div>
+
+  </div>
+</div>
             {/* LIST */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 

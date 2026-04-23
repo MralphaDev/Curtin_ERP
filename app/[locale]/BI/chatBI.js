@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer
 } from "recharts";
-
+import SearchableSelect from "./searchableSelect";
 // ================= AUTO SCROLL LOGIC =================
 //
 // chatRef points to the scrollable chat container (the div with overflow-y-auto)
@@ -289,13 +289,13 @@ const submitQuery = async () => {
               onClick={() => handleCategory("inventory")}
               className="px-4 py-2 bg-sky-500 text-white rounded-xl"
             >
-              Inventory
+              库存查询
             </button>
 
             <button 
             onClick={() => handleCategory("sales")}
             className="px-4 py-2 bg-gray-300 rounded-xl">
-              Sales
+              业绩查询
             </button>
           </div>
         )}
@@ -307,34 +307,34 @@ const submitQuery = async () => {
               onClick={() => handleInventoryType("standard")}
               className="px-4 py-2 bg-sky-500 text-white rounded-xl"
             >
-              Valve Body + Coil Standard
+               主体+标配线圈
             </button>
 
             <button
               onClick={() => handleInventoryType("independent")}
               className="px-4 py-2 bg-gray-300 rounded-xl"
             >
-              Coil Independent
+              中性线圈
             </button>
           </div>
         )}
 
         {mode === "salesType" && (
-  <div className="flex gap-3">
-    <button
-      onClick={() => handleSalesType("topProducts")}
-      className="px-4 py-2 bg-sky-500 text-white rounded-xl"
-    >
-      Top Selling Valve Bodies
-    </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => handleSalesType("topProducts")}
+            className="px-4 py-2 bg-sky-500 text-white rounded-xl"
+          >
+            最畅销的型号
+          </button>
 
-    <button
-      onClick={() => handleSalesType("topCompanies")}
-      className="px-4 py-2 bg-gray-300 rounded-xl"
-    >
-      Top Customer Companies
-    </button>
-  </div>
+          <button
+            onClick={() => handleSalesType("topCompanies")}
+            className="px-4 py-2 bg-gray-300 rounded-xl"
+          >
+            客户购买量排行
+          </button>
+        </div>
         )}
 
         {mode === "salesForm" && (
@@ -360,10 +360,10 @@ const submitQuery = async () => {
         {mode === "form" && (
           <div className="p-4 border rounded-xl bg-white space-y-3">
             <label className="text-sm font-medium">
-              Select Valve Body Model
+              请选择型号 /Select Valve Body Model
             </label>
 
-            <select
+            {/*<select
               className="w-full border p-2 rounded-lg"
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
@@ -374,7 +374,15 @@ const submitQuery = async () => {
                   {p.model_number_active}
                 </option>
               ))}
-            </select>
+            </select>*/}
+            <SearchableSelect
+            list={products}
+            value={selectedModel}
+            setValue={setSelectedModel}
+            placeholder="-- select --"
+            getLabel={(p) => p.model_number_active}
+            getValue={(p) => p.model_number_active}
+          />
 
             <button
               onClick={submitQuery}
@@ -392,7 +400,7 @@ const submitQuery = async () => {
               Select Coil Model
             </label>
 
-            <select
+            {/*<select
               className="w-full border p-2 rounded-lg"
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
@@ -403,7 +411,15 @@ const submitQuery = async () => {
                   {c.unique_key_active}
                 </option>
               ))}
-            </select>
+            </select>*/}
+            <SearchableSelect
+            list={coils}
+            value={selectedModel}
+            setValue={setSelectedModel}
+            placeholder="-- select --"
+            getLabel={(c) => c.unique_key_active}
+            getValue={(c) => c.unique_key_active}
+          />
 
             <button
               onClick={submitQuery}

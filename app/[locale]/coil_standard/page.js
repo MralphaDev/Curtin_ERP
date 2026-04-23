@@ -31,6 +31,8 @@ const [form, setForm] = useState({
   image_url: "",
 });
 const [manufacturerFilter, setManufacturerFilter] = useState("");
+const [query, setQuery] = useState(""); // New state for search query for select dropdown model number
+const [isOpen, setIsOpen] = useState(false);// New state for managing dropdown open/close
 
   useEffect(() => {
     fetch("/api/products")
@@ -80,16 +82,30 @@ const [manufacturerFilter, setManufacturerFilter] = useState("");
 }
 
 
+
   async function submit(e) {
     e.preventDefault();
 
-    const voltage =
-      voltageValue !== "" ? `${voltageValue}${voltageType}` : "";
+    const voltage = voltageValue !== "" ? `${voltageValue}${voltageType}` : "";
+
+    const matchedProduct = products.find(
+        (p) =>
+          selectedModel === p.model_number_active ||
+          selectedModel === `${p.model_number_active} - ${p.manufacturer}`
+        );
+
+      if (!matchedProduct) {
+        alert("Invalid model number. Please select from the dropdown.");
+        return;
+      }
+
+      // normalize value
+      const finalModel = matchedProduct.model_number_active;
 
     const body = {
       type: ITEM_TYPES.COIL_STANDARD,
       data: {
-        model_number: selectedModel,
+        model_number: finalModel,
         voltage,
         manufacturer,
         image_url: form.image_url || null,
@@ -140,6 +156,12 @@ const [manufacturerFilter, setManufacturerFilter] = useState("");
   const filteredCoils = manufacturerFilter
   ? coils.filter((c) => c.manufacturer === manufacturerFilter)
   : coils;
+
+  const filteredProducts = products.filter((p) =>
+  `${p.model_number_active}`
+    .toLowerCase()
+    .includes(query.toLowerCase())
+);
 
   return (
 <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-slate-50 relative">
@@ -207,7 +229,7 @@ const [manufacturerFilter, setManufacturerFilter] = useState("");
           <form onSubmit={submit} className="space-y-4 md:space-y-5">
 
             {/* SELECT */}
-            <select
+            {/*<select
               className="
                 w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
                 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition
@@ -221,7 +243,54 @@ const [manufacturerFilter, setManufacturerFilter] = useState("");
                   {p.model_number_active} - {p.manufacturer}
                 </option>
               ))}
-            </select>
+            </select>*/}
+
+            {/* NEW SELECT */}
+            <div className="relative w-full">
+              {/* INPUT (replaces select) */}
+              <input
+                type="text"
+                value={query}
+                placeholder={dict.selectValveModel}
+                onFocus={() => setIsOpen(true)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setIsOpen(true);
+                }}
+                className="
+                  w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm
+                  focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition
+                "
+              />
+
+              {/* DROPDOWN */}
+              {isOpen && (
+                <div className="
+                  absolute z-10 mt-1 w-full bg-white border-2 border-slate-200 rounded-xl shadow-lg
+                  max-h-60 overflow-y-auto
+                ">
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((p) => (
+                      <div
+                        key={p.id}
+                        className="px-4 py-2 text-sm hover:bg-slate-100 cursor-pointer"
+                        onClick={() => {
+                          setSelectedModel(p.model_number_active);
+                          setQuery(`${p.model_number_active}`);
+                          setIsOpen(false);
+                        }}
+                      >
+                        {p.model_number_active}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-sm text-slate-400">
+                      No results
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             <div className="text-xs text-slate-500">
               {dict.selected}: <b>{selectedModel || "-"}</b>
