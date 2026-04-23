@@ -219,6 +219,10 @@ function normalizeCompany(s) {
       return;
     }
 
+    if(res.ok) { 
+      alert("Success! Inventory event recorded.");
+    }
+
     if (data.warnings?.length) {
       alert(data.warnings.join("\n"));
     }

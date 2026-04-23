@@ -263,7 +263,7 @@ const iconWrapper =
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
               >
-                <Box className="w-5 h-5 text-white" />
+                <Cog className="w-5 h-5 text-white" />
               </motion.div>
             </span>
             {dict.businessIntelligence}
