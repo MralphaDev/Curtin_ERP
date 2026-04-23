@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getValveBodyReport } from "@/lib/reports/buildManufacturerReport";
-import { buildManufacturerReport } from "@/lib/reports/buildManufacturerReport";
+import { getValveBodyReport, buildManufacturerReport } from "@/lib/reports/buildManufacturerReport";
 
 export async function GET(req) {
   try {
@@ -8,7 +7,7 @@ export async function GET(req) {
     const range = searchParams.get("range") || "month";
 
     const rows = await getValveBodyReport(range);
-    const report = buildManufacturerReport(rows);
+    const report =  buildManufacturerReport(rows);
 
     return NextResponse.json(report);
   } catch (err) {
