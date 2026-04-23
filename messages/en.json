@@ -79,7 +79,10 @@
   "eventAction": {
     "IN": "IN",
     "OUT": "OUT"
-  }
+  },
+
+  "businessIntelligence": "Business Intelligence",
+  "biDesc": "Unlock insights with our powerful BI tools"
   
 
 }

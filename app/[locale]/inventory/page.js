@@ -43,6 +43,14 @@ export default function NewInventory({ user }) {
   const [outSelectedCoilIndp, setOutSelectedCoilIndp] = useState(null);
   const [outQuantity, setOutQuantity] = useState(1);
 
+
+  //inventory event filtering 
+  const [startDate, setStartDate] = useState("");
+const [endDate, setEndDate] = useState("");
+const [selectedCompany, setSelectedCompany] = useState("");
+
+
+
   // ================================
   // 🌐 FETCH INITIAL DATA
   // ================================
@@ -286,16 +294,32 @@ async function deleteEvent(id) {
   // setStock(updatedStock);
 }
 
-  // ================================
-  // 🎨 UI
-  // ================================
-if (coilStd.length > 0) {
-  console.log("coilstandard:", coilStd);
-}
+const filteredEvents = events.filter((event) => {
+  const time = new Date(event.created_at).getTime();
 
-if (coilIndp.length > 0) {
-  console.log("coilindependent:", coilIndp);
-}
+  const startOk = startDate
+    ? time >= new Date(startDate).getTime()
+    : true;
+
+  const endOk = endDate
+    ? time <= new Date(endDate + "T23:59:59").getTime()
+    : true;
+
+  const companyOk = selectedCompany
+    ? event.company === selectedCompany
+    : true;
+
+  return startOk && endOk && companyOk;
+});
+
+  //frontend in/out event split layout 
+const inEvents = filteredEvents.filter(e => e.action === "IN");
+const outEvents = filteredEvents.filter(e => e.action === "OUT");
+const companies = [...new Set(events.map(e => e.company))];
+
+
+
+
 return (
 <div className="min-h-screen bg-gradient-to-br from-white via-sky-50/30 to-white">
   {/* Ambient background effects */}
@@ -564,101 +588,187 @@ return (
 
       </div>
 
-      {/* LIST */}
-      <div className="grid gap-3 md:gap-4">
+          {/* FILTERS DATE BUTTONS*/}
+      <div className="flex flex-wrap gap-2 mb-4">
 
-        {events.map((event, index) => (
-          <div
-            key={event.id}
-            className="group relative rounded-2xl border-2 border-slate-100 bg-white/80 p-4 md:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-sky-200 hover:-translate-y-0.5 overflow-hidden"
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
+        {/* DATE START */}
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        />
 
-            {/* MAIN ROW */}
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4 min-w-0 w-full">
+        {/* DATE END */}
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        />
 
-              {/* LEFT SIDE */}
-              <div className="flex items-start gap-3 md:gap-4 min-w-0 w-full">
+        {/* COMPANY FILTER */}
+        <select
+          value={selectedCompany}
+          onChange={(e) => setSelectedCompany(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        >
+          <option value="">All Companies</option>
+          {companies.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
 
-                {/* ACTION ICON */}
-                <div className={`flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-xl flex-shrink-0 ${
-                  event.action === 'IN'
-                    ? 'bg-emerald-100 text-emerald-600'
-                    : 'bg-rose-100 text-rose-600'
-                }`}>
-                  {event.action === 'IN' ? (
+        {/* RESET */}
+        <button
+          onClick={() => {
+            setStartDate("");
+            setEndDate("");
+            setSelectedCompany("");
+          }}
+          className="px-3 py-2 text-sm rounded-lg bg-slate-100 hover:bg-slate-200"
+        >
+          Reset
+        </button>
+
+      </div>
+            {/* LIST */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+
+        {/* LEFT: IN */}
+        <div className="flex flex-col gap-3 md:gap-4">
+
+          <h2 className="text-sm font-bold text-emerald-600">
+            IN ({inEvents.length})
+          </h2>
+
+          {inEvents.map((event, index) => (
+            <div
+              key={event.id}
+              className="group relative rounded-2xl border-2 border-slate-100 bg-white/80 p-4 md:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-sky-200 hover:-translate-y-0.5 overflow-hidden"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+
+              
+
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4 min-w-0 w-full">
+
+                {/* LEFT SIDE */}
+
+                <div className="flex items-start gap-3 md:gap-4 min-w-0 w-full">
+                    <button
+                      onClick={() => deleteEvent(event.id)}
+                      className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+
+                  <div className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-xl flex-shrink-0 bg-emerald-100 text-emerald-600">
                     <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                     </svg>
-                  ) : (
-                    <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                  )}
-                </div>
-
-                {/* CONTENT */}
-                <div className="flex-1 min-w-0 w-full">
-
-                  {/* BADGES */}
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold ${
-                      event.action === 'IN'
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-rose-100 text-rose-700'
-                    }`}>
-                     {dict.eventAction[event.action]}
-                    </span>
-
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-sky-100 text-sky-700 text-xs font-semibold">
-                      {dict.inventoryModes[event.mode] || event.mode}
-                    </span>
-
                   </div>
 
-                  {/* MAIN TEXT (FIXED OVERFLOW) */}
-                  <p className="text-sm font-medium text-slate-700 mt-1 md:mt-2 break-words whitespace-normal">
-                    {formatEvent(event)}
-                  </p>
+                  {/* CONTENT */}
+                  <div className="flex-1 min-w-0 w-full">
+                    
 
-                  {/* META */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2 text-xs text-slate-500 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700">
+                        {dict.eventAction[event.action]}
+                      </span>
 
-                    <span className="flex items-center gap-1 min-w-0">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                      {event.company}
-                    </span>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-sky-100 text-sky-700 text-xs font-semibold">
+                        {dict.inventoryModes[event.mode] || event.mode}
+                      </span>
+                    </div>
 
-                    <span className="flex items-center gap-1 min-w-0">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {new Date(event.created_at).toLocaleString()}
-                    </span>
+                    <p className="text-sm font-medium text-slate-700 mt-1 md:mt-2 break-words whitespace-normal">
+                      {formatEvent(event)}
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2 text-xs text-slate-500">
+                      <span>{event.company}</span>
+                      <span>{new Date(event.created_at).toLocaleString()}</span>
+                    </div>
+
+                    
 
                   </div>
-
                 </div>
+
               </div>
 
-              {/* DELETE BUTTON */}
-              {user.role === "admin" && (
-                <button
+            </div>
+          ))}
+        </div>
+
+        {/* RIGHT: OUT */}
+        <div className="flex flex-col gap-3 md:gap-4">
+          
+
+          <h2 className="text-sm font-bold text-rose-600">
+            OUT ({outEvents.length})
+          </h2>
+
+          {outEvents.map((event, index) => (
+            <div
+              key={event.id}
+              className="group relative rounded-2xl border-2 border-slate-100 bg-white/80 p-4 md:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-sky-200 hover:-translate-y-0.5 overflow-hidden"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+
+              {/* same card, only icon/color changed */}
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4 min-w-0 w-full">
+                  <button
                   onClick={() => deleteEvent(event.id)}
-                  className="opacity-0 group-hover:opacity-100 md:opacity-0 flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 text-red-500 transition-all duration-300 hover:bg-red-100 hover:scale-110 active:scale-95 self-end md:self-start flex-shrink-0"
+                  className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>)}
+                  </svg>
+                </button>
+                <div className="flex items-start gap-3 md:gap-4 min-w-0 w-full">
+
+                  <div className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-xl flex-shrink-0 bg-rose-100 text-rose-600">
+                    <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                  </div>
+
+                  <div className="flex-1 min-w-0 w-full">
+
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-100 text-rose-700">
+                        {dict.eventAction[event.action]}
+                      </span>
+
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-sky-100 text-sky-700 text-xs font-semibold">
+                        {dict.inventoryModes[event.mode] || event.mode}
+                      </span>
+                    </div>
+
+                    <p className="text-sm font-medium text-slate-700 mt-1 md:mt-2 break-words whitespace-normal">
+                      {formatEvent(event)}
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2 text-xs text-slate-500">
+                      <span>{event.company}</span>
+                      <span>{new Date(event.created_at).toLocaleString()}</span>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
 
             </div>
-
-          </div>
-        ))}
+          ))}
+        </div>
 
       </div>
     </div>

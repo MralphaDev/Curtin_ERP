@@ -5,6 +5,7 @@ import { ITEM_TYPES } from "@/lib/constants/itemTypes";
 import { Boxes, Plus ,Trash2} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
+import ManufacturerFilter from "../ManufacturerFilter";
 
 export default function CoilIndependentPage({user}) {
   const pathname = usePathname();
@@ -15,17 +16,59 @@ export default function CoilIndependentPage({user}) {
   const [coilModel, setCoilModel] = useState("");
   const [coilError, setCoilError] = useState("");// coil model error for client-side validation
 
-  // 🔥 CHANGED: split voltage
+  // split voltage
   const [voltageValue, setVoltageValue] = useState("");
   const [voltageType, setVoltageType] = useState("VAC");
 
   const [manufacturer, setManufacturer] = useState("");
+
+  const [previewImg, setPreviewImg] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [form, setForm] = useState({
+    coil_idp_model: "",
+    voltage: "",
+    manufacturer: "",
+    image_url: "",
+  });
+  const [manufacturerFilter, setManufacturerFilter] = useState("");
+
+  async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    setUploading(true);
+
+    const res = await fetch("https://gsvi.cc/api-inv/upload.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data?.error || "Upload failed");
+
+    setForm((prev) => ({
+      ...prev,
+      image_url: data.url,
+    }));
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    alert("Upload failed");
+  } finally {
+    setUploading(false);
+  }
+}
 
   async function loadCoils() {
     const res = await fetch("/api/coil");
     const data = await res.json();
     setCoils(data.independent);
   }
+
+  const filteredCoils = manufacturerFilter
+  ? coils.filter((c) => c.manufacturer === manufacturerFilter)
+  : coils;
 
   useEffect(() => {
     loadCoils();
@@ -52,6 +95,7 @@ export default function CoilIndependentPage({user}) {
         coil_idp_model: coilModel,
         voltage,
         manufacturer,
+        image_url: form.image_url,
       },
     };
 
@@ -73,6 +117,13 @@ export default function CoilIndependentPage({user}) {
       setVoltageValue("");
       setVoltageType("VAC");
       setManufacturer("");
+      setForm({
+        coil_idp_model: "",
+        voltage: "",
+        manufacturer: "",
+        image_url: "",
+      });
+
       loadCoils();
     } else {
       alert(result.message);
@@ -245,6 +296,40 @@ return (
               <option value="SATURN">SATURN</option>
             </select>
 
+            {/* IMAGE UPLOAD */}
+            <div className="space-y-3">
+
+              <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 bg-white hover:border-sky-400 hover:bg-sky-50 cursor-pointer transition">
+
+                <span className="text-sm font-medium text-slate-600">
+                  Upload Image
+                </span>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) uploadImage(file);
+                  }}
+                />
+              </label>
+
+              {uploading && (
+                <p className="text-xs text-sky-500">Uploading...</p>
+              )}
+
+              {form.image_url && (
+                <img
+                  src={form.image_url}
+                  className="w-24 h-24 object-cover rounded-xl border cursor-pointer"
+                  onClick={() => setPreviewImg(form.image_url)}
+                />
+              )}
+
+            </div>
+
             <button
               className="
                 w-full py-3 md:py-4 rounded-xl text-sm font-semibold
@@ -302,10 +387,16 @@ return (
 
           </div>
 
+            <ManufacturerFilter
+              value={manufacturerFilter}
+              onChange={setManufacturerFilter}
+              manufacturers={["JAKSA", "CEME", "ROTORK", "GOETVALVE", "SATURN"]}
+            />
+
           {/* LIST */}
           <div className="space-y-4 max-h-[65vh] md:max-h-[70vh] overflow-y-auto pr-1 md:pr-2">
 
-          {coils.map((c) => (
+          {filteredCoils.map((c) => (
             <div
               key={c.id}
               className="
@@ -336,6 +427,15 @@ return (
                   </div>
 
                 </div>
+
+                {/* IMAGE */}
+                {c.image_url && (
+                  <img
+                    src={c.image_url}
+                    onClick={() => setPreviewImg(c.image_url)}
+                    className="w-14 h-14 md:w-16 md:h-16 object-cover rounded-lg cursor-pointer hover:opacity-80 transition"
+                  />
+                )}
 
                 {/* DELETE */}
                 {user.role === "admin" && (
@@ -380,6 +480,30 @@ return (
 
     </div>
   </div>
+
+  {previewImg && (
+  <div
+    className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]"
+    onClick={() => setPreviewImg(null)}
+  >
+    <div
+      className="bg-white p-3 rounded-xl shadow-2xl max-w-md w-[90%]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        src={previewImg}
+        className="w-full max-h-[60vh] object-contain rounded-lg"
+      />
+
+      <button
+        onClick={() => setPreviewImg(null)}
+        className="mt-3 w-full py-2 text-sm rounded-lg bg-slate-900 text-white"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
 </div>
 );
 }

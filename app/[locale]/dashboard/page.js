@@ -9,6 +9,7 @@ import ProductsPage from "@/app/[locale]/products/page";
 import NewInventory from "../inventory/page";
 import CoilStandardPage from "../coil_standard/page";
 import CoilIndependentPage from "../coil_independent/page";
+import BusinessIntelligence from "../BI/bi";
 import UserMenu from "../userMenu";
 
 import {
@@ -27,6 +28,8 @@ export default function Dashboard() {
   const [active, setActive] = useState(null);
   const [user, setUser] = useState(null);
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     async function load() {
       const res = await fetch("/api/auth/me");
@@ -40,7 +43,7 @@ export default function Dashboard() {
     load();
   }, []);
 
-  if (!user) return <div>Loading...</div>;
+  //if (!user) return <div>Loading...</div>;
 
   const buttonClass =
   "px-6 py-3 rounded-2xl bg-white/70 backdrop-blur-md shadow-md hover:shadow-xl transition-all duration-300 border border-blue-100 hover:-translate-y-1 flex items-center gap-3";
@@ -49,8 +52,64 @@ const iconWrapper =
   "w-10 h-10 flex items-center justify-center rounded-xl shadow-md";
   return (
 <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-white via-blue-50 to-blue-100 flex flex-col items-center justify-center p-4 md:p-6">
+  {/* DESKTOP ONLY */}
+  <div className="hidden md:block">
+{/* LEFT TOP - Language */}
+<div className="hidden md:block fixed top-6 left-6 z-[9999]">
   <LanguageSwitcher />
+</div>
+
+{/* RIGHT TOP - User */}
+<div className="hidden md:block fixed top-6 right-6 z-[9999]">
   <UserMenu />
+</div>
+  </div>
+
+  {/* MOBILE DROPDOWN */}
+  <div className="md:hidden fixed top-6 right-4 z-[9999]">
+    <div className="relative">
+      
+      {/* trigger button */}
+      <button
+        onClick={() => setMenuOpen((v) => !v)}
+        className="w-10 h-10 rounded-xl bg-white/70 backdrop-blur-md shadow-md flex items-center justify-center"
+      >
+        ☰
+      </button>
+
+      {/* dropdown */}
+      {menuOpen && (
+        <div className="absolute right-0 mt-3 w-56 rounded-2xl bg-white/90 backdrop-blur-2xl shadow-2xl border border-blue-100 overflow-hidden">
+
+          {/* Language section */}
+          <div className="flex flex-col px-4 py-3 gap-3">
+            
+            <div className="text-xs text-gray-400">Language</div>
+            
+            <div className="flex flex-col gap-2">
+              <LanguageSwitcher />
+            </div>
+
+          </div>
+
+          <div className="h-px bg-blue-100" />
+
+          {/* User section */}
+          <div className="flex flex-col px-4 py-3 gap-3">
+
+            <div className="text-xs text-gray-400">Account</div>
+
+            <div className="flex flex-col gap-2">
+              <UserMenu />
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+    </div>
+  </div>
   <AnimatePresence mode="wait">
 
     {!active ? (
@@ -190,6 +249,23 @@ const iconWrapper =
             {dict.inventory}
           </motion.button>
 
+           <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={buttonClass}
+            onClick={() => setActive("business-intelligence")}
+          >
+            <span className={`${iconWrapper} bg-gradient-to-br from-sky-400 to-blue-500`}>
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+              >
+                <Box className="w-5 h-5 text-white" />
+              </motion.div>
+            </span>
+            {dict.businessIntelligence}
+          </motion.button>
+
         </div>
 
       </motion.div>
@@ -217,12 +293,15 @@ const iconWrapper =
           {active === "coilStandard" && <CoilStandardPage user={user}/>}
           {active === "coilIndependent" && <CoilIndependentPage user={user} />}
           {active === "inventory" && <NewInventory user={user}/>}
+          {active ==="business-intelligence" && <BusinessIntelligence user={user}/>}
         </div>
 
       </motion.div>
     )}
 
   </AnimatePresence>
+
+  
 </div>
   );
 }

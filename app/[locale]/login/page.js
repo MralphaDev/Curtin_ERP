@@ -42,7 +42,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-blue-100">
+    <div className="md:fixed md:top-4 md:right-4">
       <LanguageSwitcher />
+    </div>
 
       <motion.div
         className="w-full max-w-sm p-8 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl"

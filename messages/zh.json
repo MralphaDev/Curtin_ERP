@@ -79,6 +79,8 @@
   "eventAction": {
     "IN": "入库",
     "OUT": "出库"
-  }
+  },
+  "businessIntelligence": "商业智能",
+  "biDesc": "使用我们强大的BI工具解锁洞察力"
 
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
 import { Plus, Package, Trash2, Loader2, Thermometer, Gauge, Circle, Link2, Boxes } from "lucide-react";
-
+import ManufacturerFilter from "../ManufacturerFilter";
 export default function ProductsPage({ user }) {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
@@ -12,9 +12,10 @@ export default function ProductsPage({ user }) {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewImg, setPreviewImg] = useState(null);
 
   const [modelError, setModelError] = useState("");//model number error only for client-side validation, server will still validate and return error if duplicate or invalid data is sent
-
+  const [uploading, setUploading] = useState(false); // for img uploading state
   const [form, setForm] = useState({
     model_number: "",
     category: "",
@@ -25,7 +26,41 @@ export default function ProductsPage({ user }) {
     pressure_min_bar: "",
     pressure_max_bar: "",
     connection: "",
+    image_url: "",
   });
+  const [manufacturerFilter, setManufacturerFilter] = useState("");
+
+async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    setUploading(true);
+
+    const res = await fetch("https://gsvi.cc/api-inv/upload.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.error || "Upload failed");
+    }
+
+    if (data.url) {
+      update("image_url", data.url);
+    } else {
+      throw new Error("No URL returned");
+    }
+
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    alert("Upload failed (check console)");
+  } finally {
+    setUploading(false);
+  }
+}
 
   const update = (key, value) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -33,7 +68,11 @@ export default function ProductsPage({ user }) {
   async function load() {
     setLoading(true);
     const res = await fetch("/api/products");
-    setProducts(await res.json());
+    const data = await res.json();
+
+    data.sort((a, b) => b.id - a.id);
+
+    setProducts(data);
     setLoading(false);
   }
 
@@ -83,6 +122,7 @@ export default function ProductsPage({ user }) {
       pressure_min_bar: "",
       pressure_max_bar: "",
       connection: "",
+      image_url: "",
     });
     load();
   } else {
@@ -154,8 +194,12 @@ const fields = [
   ["pressure_min_bar", dict.pressureMin, "int"],
   ["pressure_max_bar", dict.pressureMax, "int"],
   ["connection", dict.connectionType, "text"],
+  ["image_url", "", "image"],
 ];
 
+const filteredProducts = manufacturerFilter
+  ? products.filter((p) => p.manufacturer === manufacturerFilter)
+  : products;
 
   return (
 <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-slate-50 relative">
@@ -225,7 +269,37 @@ const fields = [
                 <div key={key} className="relative">
 
                   {/* SELECT */}
-                  {type === "select" ? (
+                  {type === "image" ? (
+                  <div className="space-y-3">
+
+                    {/* custom upload button */}
+                    <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 bg-white hover:border-sky-400 hover:bg-sky-50 cursor-pointer transition">
+
+                      <span className="text-sm font-medium text-slate-600">
+                        Upload Image
+                      </span>
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadImage(file);
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+
+                    {/* uploading state */}
+                    {uploading && (
+                      <div className="text-xs text-sky-500 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+                        Uploading image...
+                      </div>
+                    )}
+
+
+                  </div>) : type === "select" ? (
                     <select
                       value={form[key]}
                       onChange={(e) => update(key, e.target.value)}
@@ -243,7 +317,7 @@ const fields = [
                         </option>
                       ))}
                     </select>
-                  ) : (
+                    ) : (
                     /* INPUT */
                     <input
                       type={type === "int" ? "text" : "text"}
@@ -286,6 +360,8 @@ const fields = [
                     />
                   )}
 
+                  
+
                   {/* ⭐ 这里放错误提示 */}
                   {key === "model_number" && modelError && (
                     <p className="text-red-500 text-xs mt-1">
@@ -309,6 +385,23 @@ const fields = [
 
             </div>
 
+              {/* preview */}
+             {form.image_url && (
+                      <div className="relative group w-fit">
+                        <img
+                          src={form.image_url}
+                          className="w-28 h-28 object-cover rounded-xl border shadow-sm"
+                        />
+
+                        {/* hover overlay */}
+                        <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center">
+                          <span className="text-white text-xs opacity-0 group-hover:opacity-100 transition">
+                            Uploaded
+                          </span>
+                        </div>
+                      </div>
+              )}
+
             <button
               type="submit"
               className="
@@ -322,10 +415,13 @@ const fields = [
               {dict.createProduct}
             </button>
 
+
           </form>
 
         </div>
       </div>
+
+
 
       {/* ================= LIST ================= */}
       <div className="relative">
@@ -370,6 +466,12 @@ const fields = [
 
           </div>
 
+          <ManufacturerFilter
+          value={manufacturerFilter}
+          onChange={setManufacturerFilter}
+          manufacturers={MANUFACTURERS}
+        />
+
           {/* LIST */}
           <div className="space-y-4 max-h-[65vh] md:max-h-[70vh] overflow-y-auto pr-1 md:pr-2">
 
@@ -377,7 +479,7 @@ const fields = [
               ? [...Array(3)].map((_, i) => (
                   <div key={i} className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 md:p-6 animate-pulse" />
                 ))
-              : products.map((p) => (
+              : filteredProducts.map((p) => (
                   <div
                     key={p.id}
                     className="
@@ -388,8 +490,20 @@ const fields = [
                     "
                   >
 
-                    {/* header */}
+                   {/* top row: image + header + delete */}
                     <div className="flex items-start justify-between mb-4">
+                    {p.image_url && (
+                      <div className="mb-4">
+                        <img
+                          src={p.image_url}
+                          alt={p.model_number_active}
+                          onClick={() => setPreviewImg(p.image_url)}
+                          className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl cursor-pointer hover:opacity-80 transition"
+                        />
+                      </div>
+                    )}
+
+                     {/* header */}
 
                       <div>
                         <h3 className="font-bold text-base md:text-lg text-slate-900 group-hover:text-sky-700">
@@ -399,6 +513,8 @@ const fields = [
                           {p.manufacturer} | {p.category}
                         </p>
                       </div>
+
+                  
 
                       {user.role === "admin" && (
                         <button className="p-2 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
@@ -450,12 +566,39 @@ const fields = [
                 ))}
 
           </div>
+          
+          
+          
 
         </div>
       </div>
 
     </div>
   </div>
+
+{previewImg && (
+  <div
+    className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]"
+    onClick={() => setPreviewImg(null)}
+  >
+    <div
+      className="bg-white p-3 rounded-xl shadow-2xl max-w-md w-[90%]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        src={previewImg}
+        className="w-full max-h-[60vh] object-contain rounded-lg"
+      />
+
+      <button
+        onClick={() => setPreviewImg(null)}
+        className="mt-3 w-full py-2 text-sm rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
 </div>
   );
 }

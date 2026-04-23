@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { ITEM_TYPES } from "@/lib/constants/itemTypes";
 import { Boxes, Plus, Trash2, Loader2 } from "lucide-react";
 import { getDictionary } from "@/lib/dictionary";
+import { image } from "framer-motion/client";
+import ManufacturerFilter from "../ManufacturerFilter";
 
 export default function CoilStandardPage({user}) {
   const pathname = usePathname();
@@ -19,6 +21,17 @@ export default function CoilStandardPage({user}) {
   const [voltageType, setVoltageType] = useState("VAC");
   const [manufacturer, setManufacturer] = useState("");
 
+  const [previewImg, setPreviewImg] = useState(null);
+const [uploading, setUploading] = useState(false);
+const [form, setForm] = useState({
+  unique_key: "",
+  valve_model: "",
+  manufacturer: "",
+  voltage: "",
+  image_url: "",
+});
+const [manufacturerFilter, setManufacturerFilter] = useState("");
+
   useEffect(() => {
     fetch("/api/products")
       .then((res) => res.json())
@@ -28,12 +41,44 @@ export default function CoilStandardPage({user}) {
   async function loadCoils() {
     const res = await fetch("/api/coil");
     const data = await res.json();
-    setCoils(data.standard);
+    setCoils(data?.standard || []);
   }
 
   useEffect(() => {
     loadCoils();
   }, []);
+
+  async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    setUploading(true);
+
+    const res = await fetch("https://gsvi.cc/api-inv/upload.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data?.error || "Upload failed");
+
+    if (data.url) {
+      setForm((prev) => ({
+        ...prev,
+        image_url: data.url,
+      }));
+    }
+
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    alert("Upload failed");
+  } finally {
+    setUploading(false);
+  }
+}
+
 
   async function submit(e) {
     e.preventDefault();
@@ -47,6 +92,7 @@ export default function CoilStandardPage({user}) {
         model_number: selectedModel,
         voltage,
         manufacturer,
+        image_url: form.image_url || null,
       },
     };
 
@@ -64,6 +110,12 @@ export default function CoilStandardPage({user}) {
       setVoltageType("VAC");
       setManufacturer("");
       loadCoils();
+      setForm({
+        valve_model: "",
+        manufacturer: "",
+        voltage: "",
+        image_url: "",
+      })
     } else {
       alert(result.message);
     }
@@ -85,6 +137,9 @@ export default function CoilStandardPage({user}) {
 
     loadCoils();
   }
+  const filteredCoils = manufacturerFilter
+  ? coils.filter((c) => c.manufacturer === manufacturerFilter)
+  : coils;
 
   return (
 <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-slate-50 relative">
@@ -225,6 +280,44 @@ export default function CoilStandardPage({user}) {
             <option value="SATURN">SATURN</option>
           </select>
 
+            {/* IMAGE UPLOAD */}
+          <div className="space-y-3">
+
+            <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 bg-white hover:border-sky-400 hover:bg-sky-50 cursor-pointer transition">
+              <span className="text-sm font-medium text-slate-600">
+                Upload Image
+              </span>
+
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) uploadImage(file);
+                }}
+              />
+            </label>
+
+            {uploading && (
+              <div className="text-xs text-sky-500 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+                Uploading...
+              </div>
+            )}
+
+            {form.image_url && (
+              <div className="relative w-fit">
+                <img
+                  src={form.image_url}
+                  onClick={() => setPreviewImg(form.image_url)}
+                  className="w-24 h-24 object-cover rounded-xl border cursor-pointer hover:opacity-80 transition"
+                />
+              </div>
+            )}
+
+          </div>
+
             <button
               type="submit"
               className="
@@ -269,6 +362,7 @@ export default function CoilStandardPage({user}) {
                 </p>
               </div>
 
+
             </div>
 
             <div className="px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-slate-100 border border-slate-200 text-xs text-slate-600">
@@ -276,11 +370,16 @@ export default function CoilStandardPage({user}) {
             </div>
 
           </div>
+          <ManufacturerFilter
+          value={manufacturerFilter}
+          onChange={setManufacturerFilter}
+          manufacturers={["JAKSA", "CEME", "ROTORK", "GOETVALVE", "SATURN"]}
+        />
 
           {/* LIST */}
           <div className="space-y-4 max-h-[65vh] md:max-h-[70vh] overflow-y-auto pr-1 md:pr-2">
 
-          {coils.map((c) => (
+          {filteredCoils.map((c) => (
             <div
               key={c.id}
               className="
@@ -290,6 +389,7 @@ export default function CoilStandardPage({user}) {
                 transition
               "
             >
+            
 
               {/* HEADER */}
               <div className="flex items-start justify-between mb-4">
@@ -328,6 +428,16 @@ export default function CoilStandardPage({user}) {
 
               </div>
 
+              {c.image_url && (
+                <div className="mb-4">
+                  <img
+                    src={c.image_url}
+                    onClick={() => setPreviewImg(c.image_url)}
+                    className="w-20 h-20 object-cover rounded-xl cursor-pointer hover:opacity-80 transition"
+                  />
+                </div>
+              )}
+
               {/* SPECS */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
@@ -358,10 +468,36 @@ export default function CoilStandardPage({user}) {
 
           </div>
 
+          
+
         </div>
       </div>
 
     </div>
+
+    {previewImg && (
+  <div
+    className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]"
+    onClick={() => setPreviewImg(null)}
+  >
+    <div
+      className="bg-white p-3 rounded-xl shadow-2xl max-w-md w-[90%]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        src={previewImg}
+        className="w-full max-h-[60vh] object-contain rounded-lg"
+      />
+
+      <button
+        onClick={() => setPreviewImg(null)}
+        className="mt-3 w-full py-2 text-sm rounded-lg bg-slate-900 text-white"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
   </div>
 </div>
   );
