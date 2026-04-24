@@ -509,7 +509,20 @@ return (
             type="number"
             min={1}
             value={inQuantity}
-            onChange={(e) => setInQuantity(Number(e.target.value))}
+            onChange={(e) => {
+              const val = e.target.value;
+
+              if (/^\d+$/.test(val)) {
+                setInQuantity(Number(val));
+              } else if (val === "") {
+                setInQuantity("");
+              }
+            }}
+            onKeyDown={(e) => {
+              if (["e", "E", "-", "+", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             className="w-full rounded-2xl border-2 border-emerald-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-emerald-300 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 focus:outline-none placeholder:text-slate-400"
             placeholder="Enter quantity..."
           />
@@ -599,7 +612,26 @@ return (
             type="number"
             min={1}
             value={outQuantity}
-            onChange={(e) => setOutQuantity(Number(e.target.value))}
+            onChange={(e) => {
+              const val = e.target.value;
+
+              if (/^\d+$/.test(val)) {
+                setOutQuantity(Number(val));
+              } else if (val === "") {
+                setOutQuantity("");
+              }
+            }}
+            onKeyDown={(e) => {
+              if (["e", "E", "-", "+", "."].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            onPaste={(e) => {
+              const paste = e.clipboardData.getData("text");
+              if (!/^\d+$/.test(paste)) {
+                e.preventDefault();
+              }
+            }}
             className="w-full rounded-2xl border-2 border-rose-100 bg-white/80 px-4 py-3.5 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:border-rose-300 focus:border-rose-400 focus:ring-4 focus:ring-rose-100 focus:outline-none placeholder:text-slate-400"
             placeholder="Enter quantity..."
           />

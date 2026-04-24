@@ -42,7 +42,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-blue-100">
-    <div className="md:fixed md:top-4 md:right-4">
+    <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[9999]">
       <LanguageSwitcher />
     </div>
 

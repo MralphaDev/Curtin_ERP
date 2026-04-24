@@ -188,11 +188,18 @@ const fields = [
   ["model_number", dict.modelNumber, "text"],
   ["category", dict.category, "select", CATEGORIES],
   ["manufacturer", dict.manufacturerBody, "select", MANUFACTURERS],
-  ["inner_diameter_mm", dict.innerDiameter, "int"],
-  ["temp_min_c", dict.tempMin, "int"],
+
+  // float, >= 0, allows decimal
+  ["inner_diameter_mm", dict.innerDiameter, "float"],
+
+  // integer, can be negative
+  ["temp_min_c", dict.tempMin, "int"], 
   ["temp_max_c", dict.tempMax, "int"],
-  ["pressure_min_bar", dict.pressureMin, "int"],
-  ["pressure_max_bar", dict.pressureMax, "int"],
+
+  // integer, >= 0 only
+  ["pressure_min_bar", dict.pressureMin, "uint"],
+  ["pressure_max_bar", dict.pressureMax, "uint"],
+
   ["connection", dict.connectionType, "text"],
   ["image_url", "", "image"],
 ];
@@ -323,7 +330,8 @@ const filteredProducts = manufacturerFilter
                       type={type === "int" ? "text" : "text"}
                       inputMode={type === "int" ? "numeric" : undefined}
                       value={form[key]}
-                      onKeyDown={(e) => {
+                      /*onKeyDown={(e) => {
+
                         if (type !== "int") return;
 
                         // allow control keys
@@ -339,7 +347,73 @@ const filteredProducts = manufacturerFilter
                         if (!/^[0-9]$/.test(e.key)) {
                           e.preventDefault();
                         }
-                      }}
+                      }}*/
+                     //construction on going 
+onKeyDown={(e) => {
+  // only handle numeric-like fields
+  if (
+    type === "text" ||
+    type === "select" ||
+    type === "image"
+  ) return;
+
+  const k = e.key;
+  const field = key;
+  const value = e.target.value;
+
+  const isNumber = /^[0-9]$/.test(k);
+
+  // =========================
+  // CONTROL KEYS
+  // =========================
+  if (
+    k === "Backspace" ||
+    k === "Delete" ||
+    k === "ArrowLeft" ||
+    k === "ArrowRight" ||
+    k === "Tab"
+  ) return;
+
+  // =========================
+  // INNER DIAMETER (≥0, float)
+  // =========================
+  if (field === "inner_diameter_mm") {
+    if (isNumber) return;
+    if (k === "." && !value.includes(".")) return;
+
+    e.preventDefault();
+    return;
+  }
+
+  // =========================
+  // TEMPERATURE (int, can be negative)
+  // =========================
+  if (field === "temp_min_c" || field === "temp_max_c") {
+    if (isNumber) return;
+    if (k === "-" && value.length === 0) return;
+
+    e.preventDefault();
+    return;
+  }
+
+  // =========================
+  // PRESSURE (int ≥ 0 ONLY)
+  // =========================
+  if (
+    field === "pressure_min_bar" ||
+    field === "pressure_max_bar"
+  ) {
+    // ONLY digits allowed
+    if (isNumber) return;
+
+    // everything else blocked (".", "-", letters, etc.)
+    e.preventDefault();
+    return;
+  }
+
+  // fallback
+  e.preventDefault();
+}}
                       onChange={(e) => {
                         const value = e.target.value;
 

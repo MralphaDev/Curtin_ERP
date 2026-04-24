@@ -54,15 +54,15 @@ const iconWrapper =
 <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-white via-blue-50 to-blue-100 flex flex-col items-center justify-center p-4 md:p-6">
   {/* DESKTOP ONLY */}
   <div className="hidden md:block">
-{/* LEFT TOP - Language */}
-<div className="hidden md:block fixed top-6 left-6 z-[9999]">
-  <LanguageSwitcher />
-</div>
+    {/* LEFT TOP - Language */}
+    <div className="hidden md:block fixed top-6 left-6 z-[9999]">
+      <LanguageSwitcher />
+    </div>
 
-{/* RIGHT TOP - User */}
-<div className="hidden md:block fixed top-6 right-6 z-[9999]">
-  <UserMenu />
-</div>
+    {/* RIGHT TOP - User */}
+    <div className="hidden md:block fixed top-6 right-6 z-[9999]">
+      <UserMenu />
+    </div>
   </div>
 
   {/* MOBILE DROPDOWN */}
